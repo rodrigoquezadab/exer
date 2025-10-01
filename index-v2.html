@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WellnessHarbor Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body class="h-full bg-gray-900 text-gray-100 font-[Inter]">
+    <header
+      class="sticky top-0 z-30 bg-gray-900/80 backdrop-blur border-b border-gray-800"
+    >
+      <div
+        class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-9 h-9 rounded-lg bg-blue-600 grid place-items-center shadow-lg"
+          >
+            🏝️
+          </div>
+          <h1 class="text-lg font-semibold">WellnessHarbor Tracker</h1>
+        </div>
+        <nav class="flex gap-2">
+          <button id="nav-register" class="px-3 py-2 rounded-md bg-blue-700">
+            Registrar
+          </button>
+          <button
+            id="nav-stats"
+            class="px-3 py-2 rounded-md bg-gray-700 hover:bg-gray-600"
+          >
+            Estadísticas
+          </button>
+          <button
+            id="nav-history"
+            class="px-3 py-2 rounded-md bg-gray-700 hover:bg-gray-600"
+          >
+            Historial
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+      <!-- Panel superior: Objetivos + Acciones -->
+      <section class="grid md:grid-cols-3 gap-4">
+        <div
+          class="col-span-2 bg-gray-800/60 rounded-xl border border-gray-700 p-4"
+        >
+          <h2 class="font-semibold mb-3">Objetivos semanales</h2>
+          <div class="grid sm:grid-cols-3 gap-3">
+            <div class="p-3 rounded-lg bg-gray-900/60 border border-gray-700">
+              <div class="text-sm text-gray-400 mb-1">Cardio (min)</div>
+              <div class="flex items-center gap-2">
+                <input
+                  id="goal-cardio"
+                  type="number"
+                  min="0"
+                  class="w-24 bg-gray-800 border border-gray-700 rounded px-2 py-1"
+                  placeholder="90"
+                />
+                <button
+                  id="save-goals"
+                  class="text-sm px-3 py-1 rounded bg-blue-700"
+                >
+                  Guardar
+                </button>
+              </div>
+            </div>
+            <div class="p-3 rounded-lg bg-gray-900/60 border border-gray-700">
+              <div class="text-sm text-gray-400 mb-1">Fuerza (reps)</div>
+              <input
+                id="goal-strength"
+                type="number"
+                min="0"
+                class="w-24 bg-gray-800 border border-gray-700 rounded px-2 py-1"
+                placeholder="300"
+              />
+            </div>
+            <div class="p-3 rounded-lg bg-gray-900/60 border border-gray-700">
+              <div class="text-sm text-gray-400 mb-1">Pasos</div>
+              <input
+                id="goal-steps"
+                type="number"
+                min="0"
+                class="w-24 bg-gray-800 border border-gray-700 rounded px-2 py-1"
+                placeholder="35000"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="bg-gray-800/60 rounded-xl border border-gray-700 p-4 flex items-center justify-between gap-2"
+        >
+          <div class="space-y-1">
+            <div class="text-sm text-gray-400">Acciones</div>
+            <div class="text-xs text-gray-400">
+              Respaldar o cargar tus datos
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button
+              id="export-json"
+              class="px-3 py-2 rounded bg-gray-700 hover:bg-gray-600"
+            >
+              Exportar
+            </button>
+            <label
+              class="px-3 py-2 rounded bg-gray-700 hover:bg-gray-600 cursor-pointer"
+            >
+              Importar
+              <input
+                id="import-json"
+                type="file"
+                accept="application/json"
+                class="hidden"
+              />
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Selección de ejercicio -->
+      <section id="exercise-selection" class="space-y-4">
+        <h2 class="text-xl font-semibold">Selecciona un Ejercicio</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Cardio -->
+          <button data-ex="Correr" class="exercise-card">
+            <div class="emoji">🏃</div>
+            <div>
+              <div class="title">Correr</div>
+              <div class="meta">Distancia (km)</div>
+            </div>
+          </button>
+          <button data-ex="Caminar" class="exercise-card">
+            <div class="emoji">🚶</div>
+            <div>
+              <div class="title">Caminar</div>
+              <div class="meta">Pasos</div>
+            </div>
+          </button>
+          <button data-ex="Bicicleta" class="exercise-card">
+            <div class="emoji">🚴</div>
+            <div>
+              <div class="title">Bicicleta</div>
+              <div class="meta">Tiempo (min)</div>
+            </div>
+          </button>
+          <button data-ex="Saltar la Cuerda" class="exercise-card">
+            <div class="emoji">🪢</div>
+            <div>
+              <div class="title">Saltar la Cuerda</div>
+              <div class="meta">Saltos</div>
+            </div>
+          </button>
+          <!-- Fuerza -->
+          <button data-ex="Sentadillas" class="exercise-card">
+            <div class="emoji">🏋️</div>
+            <div>
+              <div class="title">Sentadillas</div>
+              <div class="meta">Repeticiones</div>
+            </div>
+          </button>
+          <button data-ex="Flexiones de Brazos" class="exercise-card">
+            <div class="emoji">🤸</div>
+            <div>
+              <div class="title">Flexiones</div>
+              <div class="meta">Repeticiones</div>
+            </div>
+          </button>
+          <button data-ex="Abdominales" class="exercise-card">
+            <div class="emoji">💪</div>
+            <div>
+              <div class="title">Abdominales</div>
+              <div class="meta">Repeticiones</div>
+            </div>
+          </button>
+          <button data-ex="Zancadas" class="exercise-card">
+            <div class="emoji">🦵</div>
+            <div>
+              <div class="title">Zancadas</div>
+              <div class="meta">Repeticiones</div>
+            </div>
+          </button>
+          <button data-ex="Burpees" class="exercise-card">
+            <div class="emoji">🔥</div>
+            <div>
+              <div class="title">Burpees</div>
+              <div class="meta">Repeticiones</div>
+            </div>
+          </button>
+          <button data-ex="Plancha" class="exercise-card">
+            <div class="emoji">🧘</div>
+            <div>
+              <div class="title">Plancha</div>
+              <div class="meta">Tiempo (min)</div>
+            </div>
+          </button>
+          <button data-ex="Remo con Mancuernas" class="exercise-card">
+            <div class="emoji">🏋️‍♂️</div>
+            <div>
+              <div class="title">Remo Mancuernas</div>
+              <div class="meta">Repeticiones</div>
+            </div>
+          </button>
+          <button data-ex="Press de Hombros" class="exercise-card">
+            <div class="emoji">🏗️</div>
+            <div>
+              <div class="title">Press Hombros</div>
+              <div class="meta">Repeticiones</div>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <!-- Registro -->
+      <section id="exercise-input" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold">
+            Registrar:
+            <span id="current-exercise-name" class="text-blue-400">—</span>
+          </h2>
+          <button
+            id="cancel-input"
+            class="px-3 py-2 rounded bg-gray-700 hover:bg-gray-600"
+          >
+            Cancelar
+          </button>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div id="repetitions-group" class="input-card hidden">
+            <label class="label">Repeticiones</label>
+            <input
+              id="repetitions"
+              type="number"
+              min="1"
+              class="input"
+              placeholder="Ej: 15"
+            />
+          </div>
+          <div id="steps-group" class="input-card hidden">
+            <label class="label">Pasos</label>
+            <input
+              id="steps"
+              type="number"
+              min="1"
+              class="input"
+              placeholder="Ej: 5000"
+            />
+          </div>
+          <div id="time-group" class="input-card hidden">
+            <label class="label">Tiempo (min)</label>
+            <input
+              id="time-minutes"
+              type="number"
+              min="1"
+              step="0.5"
+              class="input"
+              placeholder="Ej: 20"
+            />
+          </div>
+          <div id="distance-group" class="input-card hidden">
+            <label class="label">Distancia (km)</label>
+            <input
+              id="distance-km"
+              type="number"
+              min="0.1"
+              step="0.1"
+              class="input"
+              placeholder="Ej: 3.5"
+            />
+          </div>
+          <div id="jumps-group" class="input-card hidden">
+            <label class="label">Saltos</label>
+            <input
+              id="jumps"
+              type="number"
+              min="1"
+              class="input"
+              placeholder="Ej: 100"
+            />
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <button
+            id="save-exercise"
+            class="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 shadow"
+          >
+            Guardar Registro
+          </button>
+          <span id="save-hint" class="text-sm text-gray-400"
+            >Tip: usa Enter para guardar</span
+          >
+        </div>
+      </section>
+
+      <!-- Estadísticas -->
+      <section id="stats-section" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold">Tus Estadísticas</h2>
+          <div class="flex gap-2">
+            <button data-period="week" class="view-chip active">Semana</button>
+            <button data-period="month" class="view-chip">Mes</button>
+            <button data-period="year" class="view-chip">Año</button>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="stat-card">
+            <div class="stat-label">Cardio (min)</div>
+            <div id="stat-cardio" class="stat-value">0</div>
+            <div class="progress"><div id="bar-cardio" class="bar"></div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Fuerza (reps)</div>
+            <div id="stat-strength" class="stat-value">0</div>
+            <div class="progress">
+              <div id="bar-strength" class="bar"></div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pasos</div>
+            <div id="stat-steps" class="stat-value">0</div>
+            <div class="progress"><div id="bar-steps" class="bar"></div></div>
+          </div>
+        </div>
+
+        <div class="bg-gray-800/60 rounded-xl border border-gray-700 p-4">
+          <canvas id="progress-chart" height="100"></canvas>
+        </div>
+      </section>
+
+      <!-- Historial -->
+      <section id="record-history" class="hidden space-y-4">
+        <h2 class="text-xl font-semibold">Historial de Registros</h2>
+        <div id="no-records-message" class="text-gray-400">
+          No hay registros aún. ¡Empieza a entrenar!
+        </div>
+        <div id="records-list" class="space-y-2"></div>
+      </section>
+    </main>
+
+    <footer class="max-w-6xl mx-auto px-4 py-8 text-xs text-gray-500">
+      Hecho con ❤️ en WellnessHarbor
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+      // Enlazar tarjetas a tu displayExerciseInput existente
+      document.querySelectorAll(".exercise-card").forEach((btn) => {
+        btn.addEventListener(
+          "click",
+          () =>
+            window.displayExerciseInput &&
+            window.displayExerciseInput(btn.dataset.ex)
+        );
+      });
+    </script>
+  </body>
+</html>

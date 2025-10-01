@@ -73,13 +73,6 @@
         background: #a0aec0;
       }
 
-      /* Chart container with fixed height */
-      .chart-container {
-        position: relative;
-        height: 300px;
-        width: 100%;
-      }
-
       /* Subtle neumorphic effects for key elements (NO GLOW) */
       .neuro-card {
         box-shadow: 6px 6px 12px var(--shadow-dark),
@@ -139,16 +132,9 @@
     <!-- Header -->
     <header class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16 py-20">
+        <div class="flex items-center justify-between h-16">
           <div class="flex items-center">
-            <div>
-              <h1 class="text-xl font-semibold">Exercise Tracker</h1>
-              <p class="text-sm text-gray-400 mt-1">
-                Track workouts, log fitness progress, and achieve your strength
-                training and cardio goals with our free workout planner and
-                exercise logger
-              </p>
-            </div>
+            <h1 class="text-xl font-semibold">Exercise Tracker</h1>
           </div>
           <nav
             class="flex space-x-4"
@@ -745,16 +731,12 @@
         <div
           class="neuro-card bg-gray-800 rounded-lg p-6 border border-gray-700"
         >
-          <h3 class="text-lg font-semibold mb-4" id="progress-title">
-            Weekly Progress
-          </h3>
-          <!-- Contenedor con altura fija para evitar el crecimiento infinito -->
-          <div class="chart-container">
-            <canvas
-              id="progress-chart"
-              aria-label="Exercise progress chart"
-            ></canvas>
-          </div>
+          <h3 class="text-lg font-semibold mb-4">Weekly Progress</h3>
+          <canvas
+            id="progress-chart"
+            height="100"
+            aria-label="Weekly exercise progress chart"
+          ></canvas>
         </div>
       </section>
 
@@ -796,7 +778,7 @@
     </footer>
 
     <script>
-      // Complete JavaScript functionality with FIXED chart
+      // Complete JavaScript functionality (translated to English)
       document.addEventListener("DOMContentLoaded", () => {
         console.log("Exercise Tracker loaded successfully");
 
@@ -1366,205 +1348,7 @@
               cardioMin += (Number(r.jumps) || 0) / 100;
           });
 
-          // Generate chart data based on period
-          const labels = [];
-          const cardioData = [];
-          const strengthData = [];
-          const stepsData = [];
-
-          if (period === "week") {
-            // 7 days
-            for (let i = 6; i >= 0; i--) {
-              const date = new Date();
-              date.setDate(date.getDate() - i);
-              const dayStart = new Date(date);
-              dayStart.setHours(0, 0, 0, 0);
-              const dayEnd = new Date(date);
-              dayEnd.setHours(23, 59, 59, 999);
-
-              const dayRecords = inRange.filter((r) => {
-                const recordDate = new Date(r.date);
-                return recordDate >= dayStart && recordDate <= dayEnd;
-              });
-
-              let dayCardio = 0,
-                dayStrength = 0,
-                daySteps = 0;
-              dayRecords.forEach((r) => {
-                if (
-                  ["Running", "Cycling", "Plank"].includes(r.exercise) &&
-                  r.timeMinutes
-                )
-                  dayCardio += Number(r.timeMinutes) || 0;
-                if (r.exercise === "Walking" && r.steps)
-                  daySteps += Number(r.steps) || 0;
-                if (
-                  [
-                    "Squats",
-                    "Push-ups",
-                    "Sit-ups",
-                    "Lunges",
-                    "Burpees",
-                    "Dumbbell Rows",
-                    "Shoulder Press",
-                  ].includes(r.exercise) &&
-                  r.repetitions
-                ) {
-                  dayStrength += Number(r.repetitions) || 0;
-                }
-                if (r.exercise === "Running" && r.distanceKm)
-                  dayCardio += (Number(r.distanceKm) || 0) * 6;
-                if (r.exercise === "Jump Rope" && r.jumps)
-                  dayCardio += (Number(r.jumps) || 0) / 100;
-              });
-
-              labels.push(
-                date.toLocaleDateString("en-US", { weekday: "short" })
-              );
-              cardioData.push(dayCardio);
-              strengthData.push(dayStrength);
-              stepsData.push(Math.round(daySteps / 1000)); // Steps in thousands
-            }
-          } else if (period === "month") {
-            // Last 30 days, grouped by week
-            for (let i = 3; i >= 0; i--) {
-              const weekEnd = new Date();
-              weekEnd.setDate(weekEnd.getDate() - i * 7);
-              const weekStart = new Date(weekEnd);
-              weekStart.setDate(weekStart.getDate() - 6);
-              weekStart.setHours(0, 0, 0, 0);
-              weekEnd.setHours(23, 59, 59, 999);
-
-              const weekRecords = inRange.filter((r) => {
-                const recordDate = new Date(r.date);
-                return recordDate >= weekStart && recordDate <= weekEnd;
-              });
-
-              let weekCardio = 0,
-                weekStrength = 0,
-                weekSteps = 0;
-              weekRecords.forEach((r) => {
-                if (
-                  ["Running", "Cycling", "Plank"].includes(r.exercise) &&
-                  r.timeMinutes
-                )
-                  weekCardio += Number(r.timeMinutes) || 0;
-                if (r.exercise === "Walking" && r.steps)
-                  weekSteps += Number(r.steps) || 0;
-                if (
-                  [
-                    "Squats",
-                    "Push-ups",
-                    "Sit-ups",
-                    "Lunges",
-                    "Burpees",
-                    "Dumbbell Rows",
-                    "Shoulder Press",
-                  ].includes(r.exercise) &&
-                  r.repetitions
-                ) {
-                  weekStrength += Number(r.repetitions) || 0;
-                }
-                if (r.exercise === "Running" && r.distanceKm)
-                  weekCardio += (Number(r.distanceKm) || 0) * 6;
-                if (r.exercise === "Jump Rope" && r.jumps)
-                  weekCardio += (Number(r.jumps) || 0) / 100;
-              });
-
-              labels.push(`Week ${4 - i}`);
-              cardioData.push(weekCardio);
-              strengthData.push(weekStrength);
-              stepsData.push(Math.round(weekSteps / 1000));
-            }
-          } else {
-            // Year - 12 months
-            for (let i = 11; i >= 0; i--) {
-              const monthDate = new Date();
-              monthDate.setMonth(monthDate.getMonth() - i, 1);
-              monthDate.setHours(0, 0, 0, 0);
-              const monthEnd = new Date(monthDate);
-              monthEnd.setMonth(monthEnd.getMonth() + 1, 0);
-              monthEnd.setHours(23, 59, 59, 999);
-
-              const monthRecords = inRange.filter((r) => {
-                const recordDate = new Date(r.date);
-                return recordDate >= monthDate && recordDate <= monthEnd;
-              });
-
-              let monthCardio = 0,
-                monthStrength = 0,
-                monthSteps = 0;
-              monthRecords.forEach((r) => {
-                if (
-                  ["Running", "Cycling", "Plank"].includes(r.exercise) &&
-                  r.timeMinutes
-                )
-                  monthCardio += Number(r.timeMinutes) || 0;
-                if (r.exercise === "Walking" && r.steps)
-                  monthSteps += Number(r.steps) || 0;
-                if (
-                  [
-                    "Squats",
-                    "Push-ups",
-                    "Sit-ups",
-                    "Lunges",
-                    "Burpees",
-                    "Dumbbell Rows",
-                    "Shoulder Press",
-                  ].includes(r.exercise) &&
-                  r.repetitions
-                ) {
-                  monthStrength += Number(r.repetitions) || 0;
-                }
-                if (r.exercise === "Running" && r.distanceKm)
-                  monthCardio += (Number(r.distanceKm) || 0) * 6;
-                if (r.exercise === "Jump Rope" && r.jumps)
-                  monthCardio += (Number(r.jumps) || 0) / 100;
-              });
-
-              labels.push(
-                monthDate.toLocaleDateString("en-US", { month: "short" })
-              );
-              cardioData.push(monthCardio);
-              strengthData.push(monthStrength);
-              stepsData.push(Math.round(monthSteps / 1000));
-            }
-          }
-
-          return {
-            cardioMin,
-            strengthReps,
-            steps,
-            chartData: {
-              labels,
-              datasets: [
-                {
-                  label: "Cardio (min)",
-                  data: cardioData,
-                  borderColor: "#3b82f6",
-                  backgroundColor: "rgba(59, 130, 246, 0.1)",
-                  tension: 0.3,
-                  fill: false,
-                },
-                {
-                  label: "Strength (reps)",
-                  data: strengthData,
-                  borderColor: "#10b981",
-                  backgroundColor: "rgba(16, 185, 129, 0.1)",
-                  tension: 0.3,
-                  fill: false,
-                },
-                {
-                  label: "Steps (1000s)",
-                  data: stepsData,
-                  borderColor: "#8b5cf6",
-                  backgroundColor: "rgba(139, 92, 246, 0.1)",
-                  tension: 0.3,
-                  fill: false,
-                },
-              ],
-            },
-          };
+          return { cardioMin, strengthReps, steps };
         }
 
         async function updateStats(
@@ -1574,17 +1358,6 @@
           const records = await getRecords();
           const goals = loadGoals();
           const agg = aggregateMetrics(records, period);
-
-          // Update title based on period
-          const progressTitle = document.getElementById("progress-title");
-          if (progressTitle) {
-            progressTitle.textContent =
-              period === "week"
-                ? "Weekly Progress"
-                : period === "month"
-                ? "Monthly Progress"
-                : "Yearly Progress";
-          }
 
           const $c = document.getElementById("stat-cardio");
           const $s = document.getElementById("stat-strength");
@@ -1622,66 +1395,6 @@
             const stepsPercent = pct(agg.steps, goals.steps || 1);
             stepsBar.style.width = stepsPercent + "%";
             stepsBar.parentElement.setAttribute("aria-valuenow", stepsPercent);
-          }
-
-          // Update chart - FIXED VERSION
-          const ctx = document.getElementById("progress-chart");
-          if (ctx) {
-            // Destroy existing chart first
-            if (chart) {
-              chart.destroy();
-              chart = null;
-            }
-
-            // Create new chart with proper responsive settings
-            chart = new Chart(ctx, {
-              type: "line",
-              data: agg.chartData,
-              options: {
-                responsive: true,
-                maintainAspectRatio: false, // This allows the chart to fill the container
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                    grid: {
-                      color: "rgba(75, 85, 99, 0.3)",
-                    },
-                    ticks: {
-                      color: "#9ca3af",
-                    },
-                  },
-                  x: {
-                    grid: {
-                      display: false,
-                    },
-                    ticks: {
-                      color: "#9ca3af",
-                    },
-                  },
-                },
-                plugins: {
-                  legend: {
-                    labels: {
-                      color: "#e5e7eb",
-                    },
-                  },
-                  tooltip: {
-                    mode: "index",
-                    intersect: false,
-                    backgroundColor: "rgba(31, 41, 55, 0.9)",
-                    titleColor: "#e5e7eb",
-                    bodyColor: "#e5e7eb",
-                    borderColor: "#4b5563",
-                    borderWidth: 1,
-                  },
-                },
-                interaction: {
-                  mode: "nearest",
-                  axis: "x",
-                  intersect: false,
-                },
-              },
-            });
           }
 
           currentViewPeriod = period;
