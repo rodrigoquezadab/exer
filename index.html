@@ -1,1799 +1,256 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Exercise Tracker - Free Workout Logger & Fitness Tracker App</title>
-    <meta
-      name="description"
-      content="Free exercise tracker app to log workouts, track fitness goals, and monitor your progress. Perfect for strength training, cardio, and daily fitness routines."
-    />
-    <meta
-      name="keywords"
-      content="exercise tracker, workout logger, fitness tracker, strength training, cardio tracker, fitness goals, workout planner, exercise log"
-    />
-    <meta name="author" content="Exercise Tracker App" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://yoursite.com" />
-
-    <!-- Open Graph / Social Media -->
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:title"
-      content="Exercise Tracker - Free Workout Logger & Fitness Tracker"
-    />
-    <meta
-      property="og:description"
-      content="Track your workouts and fitness progress with our free exercise tracker. Log strength training, cardio, and monitor your fitness goals."
-    />
-    <meta property="og:url" content="https://yoursite.com" />
-    <meta property="og:site_name" content="Exercise Tracker" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta
-      name="twitter:title"
-      content="Exercise Tracker - Free Workout Logger"
-    />
-    <meta
-      name="twitter:description"
-      content="Free fitness tracker to log workouts and monitor your exercise progress."
-    />
-
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Tracker Pro | App Moderna</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-      /* Variables CSS for subtle neumorphism (NO GLOW) */
-      :root {
-        --neuro-bg: #e0e5ec;
-        --neuro-light: #ffffff;
-        --neuro-dark: #a3b1c6;
-        --shadow-light: rgba(255, 255, 255, 0.7);
-        --shadow-dark: rgba(163, 177, 198, 0.4);
-      }
-
-      /* Custom scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #2d3748;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #4a5568;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #a0aec0;
-      }
-
-      /* Chart container with fixed height */
-      .chart-container {
-        position: relative;
-        height: 300px;
-        width: 100%;
-      }
-
-      /* Subtle neumorphic effects for key elements (NO GLOW) */
-      .neuro-card {
-        box-shadow: 6px 6px 12px var(--shadow-dark),
-          -6px -6px 12px var(--shadow-light);
-        transition: all 0.2s ease;
-      }
-
-      .neuro-card:hover {
-        box-shadow: 8px 8px 16px var(--shadow-dark),
-          -8px -8px 16px var(--shadow-light);
-      }
-
-      .neuro-btn {
-        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
-          -2px -2px 6px rgba(255, 255, 255, 0.1);
-        transition: all 0.2s ease;
-      }
-
-      .neuro-btn:hover {
-        box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.15),
-          -3px -3px 8px rgba(255, 255, 255, 0.15);
-        transform: translateY(-1px);
-      }
-
-      .neuro-btn:active {
-        box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1),
-          inset -1px -1px 3px rgba(255, 255, 255, 0.1);
-        transform: translateY(0px);
-      }
-
-      /* Subtle neumorphic inputs (NO GLOW) */
-      .neuro-input {
-        box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.08),
-          inset -1px -1px 3px rgba(255, 255, 255, 0.1);
-        transition: all 0.2s ease;
-      }
-
-      .neuro-input:focus {
-        box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.1),
-          inset -2px -2px 4px rgba(255, 255, 255, 0.1);
-        outline: 2px solid #3b82f6;
-        outline-offset: 2px;
-      }
-
-      /* Progress bar neumorphic */
-      .neuro-progress {
-        box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1),
-          inset -1px -1px 2px rgba(255, 255, 255, 0.2);
-      }
-
-      body {
-        font-family: "Inter", sans-serif;
-      }
+        body { font-family: 'Inter', sans-serif; }
+        /* Efecto Glassmorphism sutil para paneles oscuros */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7); /* slate-800 con transparencia */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* Animación suave para las barras de progreso */
+        .progress-bar { transition: width 1s ease-in-out; }
     </style>
-  </head>
-  <body class="h-full bg-gray-900 text-gray-100">
-    <!-- Header -->
-    <header class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          class="flex flex-col sm:flex-row sm:items-center sm:justify-between py-4 sm:py-6 lg:py-8 gap-4 sm:gap-0"
-        >
-          <!-- Logo y texto principal -->
-          <div class="flex flex-col min-w-0 flex-1">
-            <h1
-              class="text-lg sm:text-xl lg:text-2xl font-semibold text-white truncate"
-            >
-              Exercise Tracker
-            </h1>
-            <p
-              class="text-xs sm:text-sm text-gray-400 mt-1 line-clamp-2 sm:line-clamp-1 max-w-full sm:max-w-md lg:max-w-lg"
-            >
-              Track workouts, log fitness progress, and achieve your strength
-              training and cardio goals with our free workout planner and
-              exercise logger
-            </p>
-          </div>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-20 selection:bg-indigo-500 selection:text-white">
 
-          <!-- Navegación -->
-          <nav
-            class="flex flex-wrap sm:flex-nowrap gap-2 sm:space-x-2 sm:gap-0"
-            role="navigation"
-            aria-label="Main navigation"
-          >
-            <button
-              id="nav-register"
-              class="neuro-btn px-3 py-2 sm:px-4 text-xs sm:text-sm rounded-md text-white bg-blue-700 hover:bg-blue-600 flex-1 sm:flex-none"
-              aria-pressed="true"
-            >
-              Log Exercise
-            </button>
-            <button
-              id="nav-stats"
-              class="neuro-btn px-3 py-2 sm:px-4 text-xs sm:text-sm rounded-md text-gray-300 bg-gray-700 hover:bg-gray-600 flex-1 sm:flex-none"
-              aria-pressed="false"
-            >
-              Statistics
-            </button>
-            <button
-              id="nav-history"
-              class="neuro-btn px-3 py-2 sm:px-4 text-xs sm:text-sm rounded-md text-gray-300 bg-gray-700 hover:bg-gray-600 flex-1 sm:flex-none"
-              aria-pressed="false"
-            >
-              History
-            </button>
-          </nav>
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b-0 border-b-slate-800">
+        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">💪</span>
+                <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">FitTrack Pro</h1>
+            </div>
+            <div class="flex gap-3">
+                <button id="btn-backup" class="p-2 rounded-full hover:bg-slate-700 text-slate-400 hover:text-white transition" title="Respaldar Datos">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                </button>
+                <label class="p-2 rounded-full hover:bg-slate-700 text-slate-400 hover:text-white transition cursor-pointer" title="Importar Datos">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    <input type="file" id="file-import" class="hidden" accept=".json">
+                </label>
+                <button id="btn-delete-all" class="p-2 rounded-full hover:bg-rose-700 text-rose-400 hover:text-white transition" title="Eliminar Todos los Datos Locales">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3"></path></svg>
+                </button>
+            </div>
         </div>
-      </div>
-    </header>
+    </nav>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" role="main">
-      <!-- Goals Section -->
-      <section class="mb-8" aria-labelledby="goals-heading">
-        <div
-          class="neuro-card bg-gray-800 rounded-lg p-6 border border-gray-700"
-        >
-          <h2 id="goals-heading" class="text-lg font-semibold mb-4">
-            Weekly Fitness Goals
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label
-                for="goal-cardio"
-                class="block text-sm font-medium text-gray-300 mb-2"
-                >Cardio (minutes)</label
-              >
-              <input
-                id="goal-cardio"
-                type="number"
-                min="0"
-                class="neuro-input w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                placeholder="90"
-                aria-describedby="cardio-help"
-              />
-              <p id="cardio-help" class="sr-only">
-                Set your weekly cardio goal in minutes
-              </p>
-            </div>
-            <div>
-              <label
-                for="goal-strength"
-                class="block text-sm font-medium text-gray-300 mb-2"
-                >Strength (reps)</label
-              >
-              <input
-                id="goal-strength"
-                type="number"
-                min="0"
-                class="neuro-input w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                placeholder="300"
-                aria-describedby="strength-help"
-              />
-              <p id="strength-help" class="sr-only">
-                Set your weekly strength training repetitions goal
-              </p>
-            </div>
-            <div>
-              <label
-                for="goal-steps"
-                class="block text-sm font-medium text-gray-300 mb-2"
-                >Steps</label
-              >
-              <input
-                id="goal-steps"
-                type="number"
-                min="0"
-                class="neuro-input w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                placeholder="35000"
-                aria-describedby="steps-help"
-              />
-              <p id="steps-help" class="sr-only">
-                Set your weekly step count goal
-              </p>
-            </div>
-            <div class="flex items-end">
-              <button
-                id="save-goals"
-                class="neuro-btn w-full px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md"
-              >
-                Save Goals
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+    <main class="max-w-4xl mx-auto px-4 pt-24 space-y-8">
 
-      <!-- Data Backup Section -->
-      <section class="mb-8" aria-labelledby="backup-heading">
-        <div
-          class="neuro-card bg-gray-800 rounded-lg p-6 border border-gray-700"
-        >
-          <h2 id="backup-heading" class="text-lg font-semibold mb-4">
-            Data Backup & Import
-          </h2>
-          <div class="flex flex-wrap gap-4">
-            <button
-              id="export-json"
-              class="neuro-btn px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-md"
-            >
-              Export Data
-            </button>
-            <label
-              class="neuro-btn px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md cursor-pointer"
-            >
-              Import Data
-              <input
-                id="import-json"
-                type="file"
-                accept="application/json"
-                class="hidden"
-                aria-describedby="import-help"
-              />
-            </label>
-            <p id="import-help" class="sr-only">
-              Upload a JSON file to import your exercise data
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Exercise Selection Section -->
-      <section id="exercise-selection" aria-labelledby="exercise-heading">
-        <div
-          class="neuro-card bg-gray-800 rounded-lg p-6 border border-gray-700"
-        >
-          <h2 id="exercise-heading" class="text-xl font-semibold mb-6">
-            Choose an Exercise
-          </h2>
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-            role="group"
-            aria-labelledby="exercise-heading"
-          >
-            <!-- Cardio Exercises -->
-            <button
-              data-ex="Running"
-              class="neuro-btn exercise-btn bg-gray-700/80 hover:bg-gray-600 p-4 rounded-lg border border-gray-600 text-left transition-all duration-200"
-              aria-describedby="running-desc"
-            >
-              <div class="flex items-center space-x-3">
-                <span class="text-2xl" role="img" aria-label="Running">🏃</span>
-                <div>
-                  <div class="font-medium">Running</div>
-                  <div class="text-sm text-gray-400" id="running-desc">
-                    Distance (km)
-                  </div>
+        <section id="goals-section" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition text-6xl">🏃</div>
+                <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Cardio Semanal</h3>
+                <div class="flex items-end gap-2 mt-1">
+                    <span id="stat-cardio" class="text-3xl font-bold text-white">0</span>
+                    <span class="text-sm text-slate-500 mb-1">/ <span id="goal-cardio-display">90</span> min</span>
                 </div>
-              </div>
-            </button>
-
-            <button
-              data-ex="Walking"
-              class="neuro-btn exercise-btn bg-gray-700/80 hover:bg-gray-600 p-4 rounded-lg border border-gray-600 text-left transition-all duration-200"
-              aria-describedby="walking-desc"
-            >
-              <div class="flex items-center space-x-3">
-                <span class="text-2xl" role="img" aria-label="Walking">🚶</span>
-                <div>
-                  <div class="font-medium">Walking</div>
-                  <div class="text-sm text-gray-400" id="walking-desc">
-                    Steps
-                  </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+                    <div id="bar-cardio" class="progress-bar h-full bg-gradient-to-r from-cyan-500 to-blue-500 w-0"></div>
                 </div>
-              </div>
-            </button>
-
-            <button
-              data-ex="Cycling"
-              class="neuro-btn exercise-btn bg-gray-700/80 hover:bg-gray-600 p-4 rounded-lg border border-gray-600 text-left transition-all duration-200"
-              aria-describedby="cycling-desc"
-            >
-              <div class="flex items-center space-x-3">
-                <span class="text-2xl" role="img" aria-label="Cycling">🚴</span>
-                <div>
-                  <div class="font-medium">Cycling</div>
-                  <div class="text-sm text-gray-400" id="cycling-desc">
-                    Time (minutes)
-                  </div>
+            </div>
+            
+            <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition text-6xl">🏋️</div>
+                <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Fuerza (Reps)</h3>
+                <div class="flex items-end gap-2 mt-1">
+                    <span id="stat-strength" class="text-3xl font-bold text-white">0</span>
+                    <span class="text-sm text-slate-500 mb-1">/ <span id="goal-strength-display">300</span> reps</span>
                 </div>
-              </div>
-            </button>
-
-            <button
-              data-ex="Jump Rope"
-              class="neuro-btn exercise-btn bg-gray-700/80 hover:bg-gray-600 p-4 rounded-lg border border-gray-600 text-left transition-all duration-200"
-              aria-describedby="jump-desc"
-            >
-              <div class="flex items-center space-x-3">
-                <span class="text-2xl" role="img" aria-label="Jump Rope"
-                  >🪢</span
-                >
-                <div>
-                  <div class="font-medium">Jump Rope</div>
-                  <div class="text-sm text-gray-400" id="jump-desc">Jumps</div>
+                <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+                    <div id="bar-strength" class="progress-bar h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 w-0"></div>
                 </div>
-              </div>
-            </button>
-
-            <!-- Strength Exercises -->
-            <button
-              data-ex="Squats"
-              class="neuro-btn exercise-btn bg-gray-700/80 hover:bg-gray-600 p-4 rounded-lg border border-gray-600 text-left transition-all duration-200"
-              aria-describedby="squats-desc"
-            >
-              <div class="flex items-center space-x-3">
-                <span class="text-2xl" role="img" aria-label="Squats">🏋️</span>
-                <div>
-                  <div class="font-medium">Squats</div>
-                  <div class="text-sm text-gray-400" id="squats-desc">
-                    Repetitions
-                  </div>
-                </div>
-              </div>
-            </button>
-
-            <button
-              data-ex="Push-ups"
-              class="neuro-btn exercise-btn bg-gray-700/80 hover:bg-gray-600 p-4 rounded-lg border border-gray-600 text-left transition-all duration-200"
-              aria-describedby="pushups-desc"
-            >
-              <div class="flex items-center space-x-3">
-                <span class="text-2xl" role="img" aria-label="Push-ups"
-                  >🤸</span
-                >
-                <div>
-                  <div class="font-medium">Push-ups</div>
-                  <div class="text-sm text-gray-400" id="pushups-desc">
-                    Repetitions
-                  </div>
-                </div>
-              </div>
-            </button>
-
-            <button
-              data-ex="Sit-ups"
-              class="neuro-btn exercise-btn bg-gray-700/80 hover:bg-gray-600 p-4 rounded-lg border border-gray-600 text-left transition-all duration-200"
-              aria-describedby="situps-desc"
-            >
-              <div class="flex items-center space-x-3">
-                <span class="text-2xl" role="img" aria-label="Sit-ups">💪</span>
-                <div>
-                  <div class="font-medium">Sit-ups</div>
-                  <div class="text-sm text-gray-400" id="situps-desc">
-                    Repetitions
-                  </div>
-                </div>
-              </div>
-            </button>
-
-            <button
-              data-ex="Lunges"
-              class="neuro-btn exercise-btn bg-gray-700/80 hover:bg-gray-600 p-4 rounded-lg border border-gray-600 text-left transition-all duration-200"
-              aria-describedby="lunges-desc"
-            >
-              <div class="flex items-center space-x-3">
-                <span class="text-2xl" role="img" aria-label="Lunges">🦵</span>
-                <div>
-                  <div class="font-medium">Lunges</div>
-                  <div class="text-sm text-gray-400" id="lunges-desc">
-                    Repetitions
-                  </div>
-                </div>
-              </div>
-            </button>
-
-            <button
-              data-ex="Burpees"
-              class="neuro-btn exercise-btn bg-gray-700/80 hover:bg-gray-600 p-4 rounded-lg border border-gray-600 text-left transition-all duration-200"
-              aria-describedby="burpees-desc"
-            >
-              <div class="flex items-center space-x-3">
-                <span class="text-2xl" role="img" aria-label="Burpees">🔥</span>
-                <div>
-                  <div class="font-medium">Burpees</div>
-                  <div class="text-sm text-gray-400" id="burpees-desc">
-                    Repetitions
-                  </div>
-                </div>
-              </div>
-            </button>
-
-            <button
-              data-ex="Plank"
-              class="neuro-btn exercise-btn bg-gray-700/80 hover:bg-gray-600 p-4 rounded-lg border border-gray-600 text-left transition-all duration-200"
-              aria-describedby="plank-desc"
-            >
-              <div class="flex items-center space-x-3">
-                <span class="text-2xl" role="img" aria-label="Plank">🧘</span>
-                <div>
-                  <div class="font-medium">Plank</div>
-                  <div class="text-sm text-gray-400" id="plank-desc">
-                    Time (minutes)
-                  </div>
-                </div>
-              </div>
-            </button>
-
-            <button
-              data-ex="Dumbbell Rows"
-              class="neuro-btn exercise-btn bg-gray-700/80 hover:bg-gray-600 p-4 rounded-lg border border-gray-600 text-left transition-all duration-200"
-              aria-describedby="rows-desc"
-            >
-              <div class="flex items-center space-x-3">
-                <span class="text-2xl" role="img" aria-label="Dumbbell Rows"
-                  >🏋️‍♂️</span
-                >
-                <div>
-                  <div class="font-medium">Dumbbell Rows</div>
-                  <div class="text-sm text-gray-400" id="rows-desc">
-                    Repetitions
-                  </div>
-                </div>
-              </div>
-            </button>
-
-            <button
-              data-ex="Shoulder Press"
-              class="neuro-btn exercise-btn bg-gray-700/80 hover:bg-gray-600 p-4 rounded-lg border border-gray-600 text-left transition-all duration-200"
-              aria-describedby="press-desc"
-            >
-              <div class="flex items-center space-x-3">
-                <span class="text-2xl" role="img" aria-label="Shoulder Press"
-                  >🏗️</span
-                >
-                <div>
-                  <div class="font-medium">Shoulder Press</div>
-                  <div class="text-sm text-gray-400" id="press-desc">
-                    Repetitions
-                  </div>
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Exercise Input Section -->
-      <section
-        id="exercise-input"
-        class="hidden"
-        aria-labelledby="input-heading"
-      >
-        <div
-          class="neuro-card bg-gray-800 rounded-lg p-6 border border-gray-700"
-        >
-          <div class="flex justify-between items-center mb-6">
-            <h2 id="input-heading" class="text-xl font-semibold">
-              Log Exercise:
-              <span id="current-exercise-name" class="text-blue-400">—</span>
-            </h2>
-            <button
-              id="cancel-input"
-              class="neuro-btn px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-md"
-            >
-              Cancel
-            </button>
-          </div>
-
-          <div
-            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6"
-          >
-            <div id="repetitions-group" class="hidden">
-              <label
-                for="repetitions"
-                class="block text-sm font-medium text-gray-300 mb-2"
-                >Repetitions</label
-              >
-              <input
-                id="repetitions"
-                type="number"
-                min="1"
-                class="neuro-input w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                placeholder="e.g. 15"
-              />
             </div>
 
-            <div id="steps-group" class="hidden">
-              <label
-                for="steps"
-                class="block text-sm font-medium text-gray-300 mb-2"
-                >Steps</label
-              >
-              <input
-                id="steps"
-                type="number"
-                min="1"
-                class="neuro-input w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                placeholder="e.g. 5000"
-              />
-            </div>
-
-            <div id="time-group" class="hidden">
-              <label
-                for="time-minutes"
-                class="block text-sm font-medium text-gray-300 mb-2"
-                >Time (minutes)</label
-              >
-              <input
-                id="time-minutes"
-                type="number"
-                min="1"
-                step="0.5"
-                class="neuro-input w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                placeholder="e.g. 20"
-              />
-            </div>
-
-            <div id="distance-group" class="hidden">
-              <label
-                for="distance-km"
-                class="block text-sm font-medium text-gray-300 mb-2"
-                >Distance (km)</label
-              >
-              <input
-                id="distance-km"
-                type="number"
-                min="0.1"
-                step="0.1"
-                class="neuro-input w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                placeholder="e.g. 3.5"
-              />
-            </div>
-
-            <div id="jumps-group" class="hidden">
-              <label
-                for="jumps"
-                class="block text-sm font-medium text-gray-300 mb-2"
-                >Jumps</label
-              >
-              <input
-                id="jumps"
-                type="number"
-                min="1"
-                class="neuro-input w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                placeholder="e.g. 100"
-              />
-            </div>
-          </div>
-
-          <div class="flex items-center space-x-4">
-            <button
-              id="save-exercise"
-              class="neuro-btn px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md"
-            >
-              Save Exercise
+            <button id="btn-set-goals" class="glass-panel p-5 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-slate-800 transition border-dashed border-2 border-slate-700">
+                <span class="text-2xl">🎯</span>
+                <span class="text-sm font-medium text-slate-300">Configurar Metas</span>
             </button>
-            <span class="text-sm text-gray-400">Tip: press Enter to save</span>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- Stats Section -->
-      <section
-        id="stats-section"
-        class="hidden"
-        aria-labelledby="stats-heading"
-      >
-        <div
-          class="neuro-card bg-gray-800 rounded-lg p-6 border border-gray-700 mb-6"
-        >
-          <div class="flex justify-between items-center mb-6">
-            <h2 id="stats-heading" class="text-xl font-semibold">
-              Your Fitness Statistics
-            </h2>
-            <div class="flex space-x-2" role="tablist" aria-label="Time period">
-              <button
-                data-period="week"
-                class="neuro-btn view-chip active px-3 py-1 bg-blue-600 text-white rounded-full text-sm"
-                role="tab"
-                aria-selected="true"
-              >
-                Week
-              </button>
-              <button
-                data-period="month"
-                class="neuro-btn view-chip px-3 py-1 bg-gray-600 text-gray-300 rounded-full text-sm"
-                role="tab"
-                aria-selected="false"
-              >
-                Month
-              </button>
-              <button
-                data-period="year"
-                class="neuro-btn view-chip px-3 py-1 bg-gray-600 text-gray-300 rounded-full text-sm"
-                role="tab"
-                aria-selected="false"
-              >
-                Year
-              </button>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div
-              class="neuro-card bg-gray-700/50 p-4 rounded-lg border border-gray-600"
-            >
-              <div class="text-sm text-gray-400 mb-1">Cardio (minutes)</div>
-              <div
-                id="stat-cardio"
-                class="text-2xl font-bold text-blue-400 mb-2"
-              >
-                0
-              </div>
-              <div
-                class="neuro-progress bg-gray-600 rounded-full h-2 overflow-hidden"
-                role="progressbar"
-                aria-valuenow="0"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              >
-                <div
-                  id="bar-cardio"
-                  class="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
-                  style="width: 0%"
-                ></div>
-              </div>
-            </div>
-
-            <div
-              class="neuro-card bg-gray-700/50 p-4 rounded-lg border border-gray-600"
-            >
-              <div class="text-sm text-gray-400 mb-1">Strength (reps)</div>
-              <div
-                id="stat-strength"
-                class="text-2xl font-bold text-green-400 mb-2"
-              >
-                0
-              </div>
-              <div
-                class="neuro-progress bg-gray-600 rounded-full h-2 overflow-hidden"
-                role="progressbar"
-                aria-valuenow="0"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              >
-                <div
-                  id="bar-strength"
-                  class="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all duration-500"
-                  style="width: 0%"
-                ></div>
-              </div>
-            </div>
-
-            <div
-              class="neuro-card bg-gray-700/50 p-4 rounded-lg border border-gray-600"
-            >
-              <div class="text-sm text-gray-400 mb-1">Steps</div>
-              <div
-                id="stat-steps"
-                class="text-2xl font-bold text-purple-400 mb-2"
-              >
-                0
-              </div>
-              <div
-                class="neuro-progress bg-gray-600 rounded-full h-2 overflow-hidden"
-                role="progressbar"
-                aria-valuenow="0"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              >
-                <div
-                  id="bar-steps"
-                  class="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full transition-all duration-500"
-                  style="width: 0%"
-                ></div>
-              </div>
-            </div>
-          </div>
+        <div class="flex justify-center p-1 bg-slate-900/50 rounded-xl backdrop-blur max-w-lg mx-auto">
+            <button id="nav-register" class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-500/30">Registrar</button>
+            <button id="nav-stats" class="flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-all">Estadísticas</button>
+            <button id="nav-weight" class="flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-all">Peso</button>
+            <button id="nav-history" class="flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-all">Historial</button>
         </div>
 
-        <div
-          class="neuro-card bg-gray-800 rounded-lg p-6 border border-gray-700"
-        >
-          <h3 class="text-lg font-semibold mb-4" id="progress-title">
-            Weekly Progress
-          </h3>
-          <!-- Contenedor con altura fija para evitar el crecimiento infinito -->
-          <div class="chart-container">
-            <canvas
-              id="progress-chart"
-              aria-label="Exercise progress chart"
-            ></canvas>
-          </div>
-        </div>
-      </section>
+        <div id="view-register" class="space-y-6">
+            <div id="exercise-selection" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                
+                <button data-exercise="Correr" class="glass-panel p-4 rounded-xl hover:bg-slate-800 transition text-left group border border-transparent hover:border-indigo-500/50">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🏃</div>
+                    <div class="font-semibold text-sm">Correr</div>
+                    <div class="text-xs text-slate-500">Distancia</div>
+                </button>
+                <button data-exercise="Caminar" class="glass-panel p-4 rounded-xl hover:bg-slate-800 transition text-left group border border-transparent hover:border-indigo-500/50">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🚶</div>
+                    <div class="font-semibold text-sm">Caminar</div>
+                    <div class="text-xs text-slate-500">Pasos</div>
+                </button>
+                <button data-exercise="Bicicleta" class="glass-panel p-4 rounded-xl hover:bg-slate-800 transition text-left group border border-transparent hover:border-indigo-500/50">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🚴</div>
+                    <div class="font-semibold text-sm">Bicicleta</div>
+                    <div class="text-xs text-slate-500">Tiempo</div>
+                </button>
+                <button data-exercise="Levantar Pesas" class="glass-panel p-4 rounded-xl hover:bg-slate-800 transition text-left group border border-transparent hover:border-indigo-500/50">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🏋️</div>
+                    <div class="font-semibold text-sm">Pesas</div>
+                    <div class="text-xs text-slate-500">Reps</div>
+                </button>
+                <button data-exercise="Sentadillas" class="glass-panel p-4 rounded-xl hover:bg-slate-800 transition text-left group border border-transparent hover:border-indigo-500/50">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🍑</div>
+                    <div class="font-semibold text-sm">Sentadillas</div>
+                    <div class="text-xs text-slate-500">Reps</div>
+                </button>
+                <button data-exercise="Flexiones" class="glass-panel p-4 rounded-xl hover:bg-slate-800 transition text-left group border border-transparent hover:border-indigo-500/50">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">💪</div>
+                    <div class="font-semibold text-sm">Flexiones</div>
+                    <div class="text-xs text-slate-500">Reps</div>
+                </button>
+                
+                <button data-exercise="Plancha" class="glass-panel p-4 rounded-xl hover:bg-slate-800 transition text-left group border border-transparent hover:border-cyan-500/50 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 p-1 opacity-20 text-4xl">⏱️</div>
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🪵</div>
+                    <div class="font-semibold text-sm text-cyan-200">Plancha</div>
+                    <div class="text-xs text-slate-500">Tiempo</div>
+                </button>
+                <button data-exercise="Crunches" class="glass-panel p-4 rounded-xl hover:bg-slate-800 transition text-left group border border-transparent hover:border-cyan-500/50">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🍫</div>
+                    <div class="font-semibold text-sm text-cyan-200">Crunches</div>
+                    <div class="text-xs text-slate-500">Cortos</div>
+                </button>
+                <button data-exercise="Elev. Piernas" class="glass-panel p-4 rounded-xl hover:bg-slate-800 transition text-left group border border-transparent hover:border-cyan-500/50">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🦵</div>
+                    <div class="font-semibold text-sm text-cyan-200">Elev. Piernas</div>
+                    <div class="text-xs text-slate-500">Inferiores</div>
+                </button>
+                <button data-exercise="Giros Rusos" class="glass-panel p-4 rounded-xl hover:bg-slate-800 transition text-left group border border-transparent hover:border-cyan-500/50">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🌪️</div>
+                    <div class="font-semibold text-sm text-cyan-200">Giros Rusos</div>
+                    <div class="text-xs text-slate-500">Oblicuos</div>
+                </button>
+                <button data-exercise="Escaladores" class="glass-panel p-4 rounded-xl hover:bg-slate-800 transition text-left group border border-transparent hover:border-cyan-500/50">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🧗</div>
+                    <div class="font-semibold text-sm text-cyan-200">Escaladores</div>
+                    <div class="text-xs text-slate-500">Core</div>
+                </button>
+                <button data-exercise="Tijeras" class="glass-panel p-4 rounded-xl hover:bg-slate-800 transition text-left group border border-transparent hover:border-cyan-500/50">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">✂️</div>
+                    <div class="font-semibold text-sm text-cyan-200">Tijeras</div>
+                    <div class="text-xs text-slate-500">Reps</div>
+                </button>
 
-      <!-- History Section -->
-      <section
-        id="record-history"
-        class="hidden"
-        aria-labelledby="history-heading"
-      >
-        <div
-          class="neuro-card bg-gray-800 rounded-lg p-6 border border-gray-700"
-        >
-          <h2 id="history-heading" class="text-xl font-semibold mb-6">
-            Exercise History
-          </h2>
-          <div id="no-records-message" class="text-center text-gray-400 py-8">
-            No exercise records yet. Start your fitness journey today!
-          </div>
-          <div
-            id="records-list"
-            class="space-y-3"
-            role="list"
-            aria-label="Exercise history"
-          ></div>
+            </div>
+
+            <div id="exercise-input" class="hidden glass-panel p-6 rounded-2xl border-l-4 border-indigo-500">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <span id="current-exercise-icon" class="text-2xl"></span>
+                        <span id="current-exercise-name">Ejercicio</span>
+                    </h2>
+                    <button id="cancel-input" class="text-slate-400 hover:text-white">Cancelar</button>
+                </div>
+
+                <div class="space-y-4">
+                    <div id="input-container">
+                        <div id="dynamic-input-group">
+                            <label class="block text-sm font-medium text-slate-400 mb-1" id="dynamic-label">Valor</label>
+                            <input type="number" id="dynamic-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition" placeholder="0">
+                        </div>
+                    </div>
+                    
+                    <button id="save-exercise" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold py-3 rounded-lg shadow-lg shadow-indigo-500/20 transition-all transform active:scale-95">
+                        Guardar Actividad
+                    </button>
+                </div>
+            </div>
         </div>
-      </section>
+
+        <div id="view-stats" class="hidden space-y-6">
+            <div class="flex justify-center gap-2 mb-4">
+                <button class="view-period-btn active px-4 py-1 rounded-full text-xs font-bold bg-indigo-600 text-white" data-period="week">Semana</button>
+                <button class="view-period-btn px-4 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700" data-period="month">Mes</button>
+                <button class="view-period-btn px-4 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700" data-period="year">Año</button>
+            </div>
+
+            <div class="glass-panel p-4 rounded-2xl h-80 w-full relative">
+                <canvas id="exerciseChart"></canvas>
+            </div>
+            
+            <div class="text-center text-xs text-slate-500 mt-2">
+                <span id="current-period-display">Periodo Actual</span>
+            </div>
+        </div>
+
+        <div id="view-weight" class="hidden space-y-6">
+            <div class="glass-panel p-6 rounded-2xl border-l-4 border-emerald-500">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-emerald-300">
+                    <span class="text-2xl">⚖️</span>
+                    Registro de Peso Corporal
+                </h2>
+                <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                    <input type="number" id="weight-input" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition" placeholder="Peso (ej: 75.5 kg)">
+                    <input type="date" id="weight-date-input" class="w-full sm:w-auto bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
+                    <button id="save-weight" class="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg shadow-emerald-500/20 transition-all transform active:scale-95">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass-panel p-4 rounded-2xl h-80 w-full relative">
+                <h3 class="text-lg font-semibold mb-2 text-emerald-300">Progreso de Peso</h3>
+                <canvas id="weightChart"></canvas>
+            </div>
+
+            <div class="glass-panel p-4 rounded-2xl">
+                <h3 class="text-lg font-semibold mb-3 text-slate-300">Historial de Registros</h3>
+                <div id="weight-records-list" class="space-y-3">
+                    </div>
+                <div id="no-weight-records-message" class="hidden text-center py-5 text-slate-500">
+                    <p>No hay registros de peso aún.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-history" class="hidden">
+            <div id="records-list" class="space-y-3">
+                </div>
+            <div id="no-records-message" class="hidden text-center py-10 text-slate-500">
+                <p>No hay registros de ejercicios aún.</p>
+            </div>
+        </div>
+
     </main>
 
-    <!-- Footer (same bg as site) -->
-    <footer class="bg-gray-900 py-8 mt-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <p class="text-gray-400">
-          Exercise Tracker - Your Personal Fitness Companion
-        </p>
-        <p class="text-gray-500 text-sm mt-2">
-          Free workout logger for strength training, cardio, and fitness goals
-        </p>
-      </div>
-    </footer>
-
-    <script>
-      // Complete JavaScript functionality with FIXED chart
-      document.addEventListener("DOMContentLoaded", () => {
-        console.log("Exercise Tracker loaded successfully");
-
-        // Get references to HTML elements
-        const navRegisterBtn = document.getElementById("nav-register");
-        const navStatsBtn = document.getElementById("nav-stats");
-        const navHistoryBtn = document.getElementById("nav-history");
-        const exerciseSelectionSection =
-          document.getElementById("exercise-selection");
-        const exerciseInputSection = document.getElementById("exercise-input");
-        const currentExerciseName = document.getElementById(
-          "current-exercise-name"
-        );
-        const repetitionsInput = document.getElementById("repetitions");
-        const stepsInput = document.getElementById("steps");
-        const timeMinutesInput = document.getElementById("time-minutes");
-        const distanceKmInput = document.getElementById("distance-km");
-        const jumpsInput = document.getElementById("jumps");
-        const repetitionsGroup = document.getElementById("repetitions-group");
-        const stepsGroup = document.getElementById("steps-group");
-        const timeGroup = document.getElementById("time-group");
-        const distanceGroup = document.getElementById("distance-group");
-        const jumpsGroup = document.getElementById("jumps-group");
-        const saveExerciseBtn = document.getElementById("save-exercise");
-        const cancelInputBtn = document.getElementById("cancel-input");
-
-        // Define exercise types and their corresponding input fields
-        const EXERCISES = {
-          Running: {
-            type: "Distance",
-            inputGroup: distanceGroup,
-            input: distanceKmInput,
-          },
-          Walking: { type: "Steps", inputGroup: stepsGroup, input: stepsInput },
-          "Weight Lifting": {
-            type: "Repetitions",
-            inputGroup: repetitionsGroup,
-            input: repetitionsInput,
-          },
-          Cycling: {
-            type: "Time",
-            inputGroup: timeGroup,
-            input: timeMinutesInput,
-          },
-          "Jump Rope": {
-            type: "Jumps",
-            inputGroup: jumpsGroup,
-            input: jumpsInput,
-          },
-          Squats: {
-            type: "Repetitions",
-            inputGroup: repetitionsGroup,
-            input: repetitionsInput,
-          },
-          "Push-ups": {
-            type: "Repetitions",
-            inputGroup: repetitionsGroup,
-            input: repetitionsInput,
-          },
-          "Sit-ups": {
-            type: "Repetitions",
-            inputGroup: repetitionsGroup,
-            input: repetitionsInput,
-          },
-          Lunges: {
-            type: "Repetitions",
-            inputGroup: repetitionsGroup,
-            input: repetitionsInput,
-          },
-          Burpees: {
-            type: "Repetitions",
-            inputGroup: repetitionsGroup,
-            input: repetitionsInput,
-          },
-          Plank: {
-            type: "Time",
-            inputGroup: timeGroup,
-            input: timeMinutesInput,
-          },
-          "Dumbbell Rows": {
-            type: "Repetitions",
-            inputGroup: repetitionsGroup,
-            input: repetitionsInput,
-          },
-          "Shoulder Press": {
-            type: "Repetitions",
-            inputGroup: repetitionsGroup,
-            input: repetitionsInput,
-          },
-        };
-
-        let currentExercise = null;
-        let isSaving = false;
-
-        // Function to show/hide input groups based on exercise type
-        function displayExerciseInput(exerciseName) {
-          currentExercise = exerciseName;
-          if (currentExerciseName) {
-            currentExerciseName.textContent = exerciseName;
-          }
-
-          // Hide all input groups first
-          [
-            repetitionsGroup,
-            stepsGroup,
-            timeGroup,
-            distanceGroup,
-            jumpsGroup,
-          ].forEach((group) => {
-            if (group) group.classList.add("hidden");
-          });
-
-          // Show the relevant input group for the selected exercise
-          const exerciseInfo = EXERCISES[exerciseName];
-          if (exerciseInfo && exerciseInfo.inputGroup) {
-            exerciseInfo.inputGroup.classList.remove("hidden");
-          }
-
-          if (exerciseSelectionSection)
-            exerciseSelectionSection.classList.add("hidden");
-          if (exerciseInputSection)
-            exerciseInputSection.classList.remove("hidden");
-        }
-
-        // Global access for exercise buttons
-        window.displayExerciseInput = displayExerciseInput;
-
-        // Exercise button event listeners
-        document.querySelectorAll("[data-ex]").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            displayExerciseInput(btn.getAttribute("data-ex"));
-          });
-        });
-
-        // IndexedDB Setup
-        let db;
-        const DB_NAME = "ExerciseTrackerDB";
-        const DB_VERSION = 1;
-        const STORE_NAME = "records";
-
-        function openDB() {
-          return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-            request.onupgradeneeded = (event) => {
-              db = event.target.result;
-              if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME, { keyPath: "date" });
-              }
-            };
-            request.onsuccess = (event) => {
-              db = event.target.result;
-              resolve(db);
-            };
-            request.onerror = (event) => {
-              reject("Error opening database: " + event.target.errorCode);
-            };
-          });
-        }
-
-        async function saveRecord(record) {
-          await openDB();
-          return new Promise((resolve, reject) => {
-            const transaction = db.transaction([STORE_NAME], "readwrite");
-            const store = transaction.objectStore(STORE_NAME);
-            const request = store.add(record);
-            request.onsuccess = () => {
-              resolve();
-            };
-            request.onerror = (event) => {
-              if (event.target.error.name === "ConstraintError") {
-                reject(
-                  new Error("A record already exists for this date and time.")
-                );
-              } else {
-                reject("Error saving record: " + event.target.errorCode);
-              }
-            };
-          });
-        }
-
-        async function getRecords() {
-          await openDB();
-          return new Promise((resolve, reject) => {
-            const transaction = db.transaction([STORE_NAME], "readonly");
-            const store = transaction.objectStore(STORE_NAME);
-            const request = store.getAll();
-            request.onsuccess = (event) => {
-              resolve(event.target.result);
-            };
-            request.onerror = (event) => {
-              reject("Error getting records: " + event.target.errorCode);
-            };
-          });
-        }
-
-        async function deleteRecord(date) {
-          await openDB();
-          return new Promise((resolve, reject) => {
-            const transaction = db.transaction([STORE_NAME], "readwrite");
-            const store = transaction.objectStore(STORE_NAME);
-            const request = store.delete(date);
-            request.onsuccess = () => {
-              resolve();
-            };
-            request.onerror = (event) => {
-              reject("Error deleting record: " + event.target.errorCode);
-            };
-          });
-        }
-
-        // Handle save exercise
-        async function handleSaveExercise() {
-          if (isSaving) return;
-          isSaving = true;
-
-          if (saveExerciseBtn) {
-            saveExerciseBtn.disabled = true;
-            saveExerciseBtn.textContent = "Saving...";
-          }
-
-          if (!currentExercise || !EXERCISES[currentExercise]) {
-            alert("Error: No valid exercise selected.");
-            isSaving = false;
-            if (saveExerciseBtn) {
-              saveExerciseBtn.disabled = false;
-              saveExerciseBtn.textContent = "Save Exercise";
-            }
-            return;
-          }
-
-          const exerciseType = EXERCISES[currentExercise].type;
-          let isValid = true;
-          let alertMessage = "";
-          let record = {
-            exercise: currentExercise,
-            date: new Date().toISOString(),
-          };
-
-          // Validation logic for different exercise types
-          if (exerciseType === "Repetitions") {
-            const repetitions = parseInt(repetitionsInput?.value || 0);
-            if (isNaN(repetitions) || repetitions <= 0) {
-              isValid = false;
-              alertMessage = "Please enter a valid number of repetitions.";
-            } else {
-              record.repetitions = repetitions;
-            }
-          } else if (exerciseType === "Steps") {
-            const steps = parseInt(stepsInput?.value || 0);
-            if (isNaN(steps) || steps <= 0) {
-              isValid = false;
-              alertMessage = "Please enter a valid number of steps.";
-            } else {
-              record.steps = steps;
-            }
-          } else if (exerciseType === "Time") {
-            const timeMinutes = parseFloat(timeMinutesInput?.value || 0);
-            if (isNaN(timeMinutes) || timeMinutes <= 0) {
-              isValid = false;
-              alertMessage = "Please enter a valid time in minutes.";
-            } else {
-              record.timeMinutes = timeMinutes;
-            }
-          } else if (exerciseType === "Distance") {
-            const distanceKm = parseFloat(distanceKmInput?.value || 0);
-            if (isNaN(distanceKm) || distanceKm <= 0) {
-              isValid = false;
-              alertMessage = "Please enter a valid distance in kilometers.";
-            } else {
-              record.distanceKm = distanceKm;
-            }
-          } else if (exerciseType === "Jumps") {
-            const jumps = parseInt(jumpsInput?.value || 0);
-            if (isNaN(jumps) || jumps <= 0) {
-              isValid = false;
-              alertMessage = "Please enter a valid number of jumps.";
-            } else {
-              record.jumps = jumps;
-            }
-          }
-
-          if (!isValid) {
-            alert(alertMessage);
-            isSaving = false;
-            if (saveExerciseBtn) {
-              saveExerciseBtn.disabled = false;
-              saveExerciseBtn.textContent = "Save Exercise";
-            }
-            return;
-          }
-
-          try {
-            await saveRecord(record);
-            alert("Exercise logged successfully!");
-
-            // Clear inputs
-            if (repetitionsInput) repetitionsInput.value = "";
-            if (stepsInput) stepsInput.value = "";
-            if (timeMinutesInput) timeMinutesInput.value = "";
-            if (distanceKmInput) distanceKmInput.value = "";
-            if (jumpsInput) jumpsInput.value = "";
-
-            // Hide input section and show exercise selection
-            if (exerciseInputSection)
-              exerciseInputSection.classList.add("hidden");
-            if (exerciseSelectionSection)
-              exerciseSelectionSection.classList.remove("hidden");
-
-            await updateStats(currentViewPeriod, currentChartDateContext);
-          } catch (error) {
-            console.error("Error saving exercise:", error);
-            alert("There was an error saving your exercise. " + error.message);
-          } finally {
-            isSaving = false;
-            if (saveExerciseBtn) {
-              saveExerciseBtn.disabled = false;
-              saveExerciseBtn.textContent = "Save Exercise";
-            }
-          }
-        }
-
-        // Navigation
-        const statsSection = document.getElementById("stats-section");
-        const recordHistorySection = document.getElementById("record-history");
-        const recordsList = document.getElementById("records-list");
-        const noRecordsMessage = document.getElementById("no-records-message");
-
-        function updateNavButtons(activeBtn) {
-          [navRegisterBtn, navStatsBtn, navHistoryBtn].forEach((btn) => {
-            if (btn) {
-              btn.classList.remove("bg-blue-700");
-              btn.classList.add("bg-gray-700");
-              btn.setAttribute("aria-pressed", "false");
-            }
-          });
-          if (activeBtn) {
-            activeBtn.classList.add("bg-blue-700");
-            activeBtn.classList.remove("bg-gray-700");
-            activeBtn.setAttribute("aria-pressed", "true");
-          }
-        }
-
-        if (navRegisterBtn) {
-          navRegisterBtn.addEventListener("click", () => {
-            updateNavButtons(navRegisterBtn);
-            if (exerciseSelectionSection)
-              exerciseSelectionSection.classList.remove("hidden");
-            if (exerciseInputSection)
-              exerciseInputSection.classList.add("hidden");
-            if (statsSection) statsSection.classList.add("hidden");
-            if (recordHistorySection)
-              recordHistorySection.classList.add("hidden");
-          });
-        }
-
-        if (navStatsBtn) {
-          navStatsBtn.addEventListener("click", async () => {
-            updateNavButtons(navStatsBtn);
-            if (exerciseSelectionSection)
-              exerciseSelectionSection.classList.add("hidden");
-            if (exerciseInputSection)
-              exerciseInputSection.classList.add("hidden");
-            if (statsSection) statsSection.classList.remove("hidden");
-            if (recordHistorySection)
-              recordHistorySection.classList.add("hidden");
-            await updateStats(currentViewPeriod, currentChartDateContext);
-          });
-        }
-
-        if (navHistoryBtn) {
-          navHistoryBtn.addEventListener("click", async () => {
-            updateNavButtons(navHistoryBtn);
-            if (exerciseSelectionSection)
-              exerciseSelectionSection.classList.add("hidden");
-            if (exerciseInputSection)
-              exerciseInputSection.classList.add("hidden");
-            if (statsSection) statsSection.classList.add("hidden");
-            if (recordHistorySection)
-              recordHistorySection.classList.remove("hidden");
-            await displayRecordHistory();
-          });
-        }
-
-        // Display record history
-        async function displayRecordHistory() {
-          const records = await getRecords();
-          if (recordsList) recordsList.innerHTML = "";
-
-          if (records.length === 0) {
-            if (noRecordsMessage) noRecordsMessage.classList.remove("hidden");
-            return;
-          } else {
-            if (noRecordsMessage) noRecordsMessage.classList.add("hidden");
-          }
-
-          records.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-          records.forEach((record) => {
-            const recordDate = new Date(record.date);
-            const dateString = recordDate.toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            });
-
-            let details = "";
-            const exerciseInfo = EXERCISES[record.exercise];
-            const exerciseType = exerciseInfo ? exerciseInfo.type : null;
-
-            if (
-              exerciseType === "Repetitions" &&
-              typeof record.repetitions !== "undefined"
-            ) {
-              details = `${record.repetitions} repetitions`;
-            } else if (
-              exerciseType === "Steps" &&
-              typeof record.steps !== "undefined"
-            ) {
-              details = `${record.steps} steps`;
-            } else if (
-              exerciseType === "Time" &&
-              typeof record.timeMinutes !== "undefined"
-            ) {
-              details = `${record.timeMinutes} minutes`;
-            } else if (
-              exerciseType === "Distance" &&
-              typeof record.distanceKm !== "undefined"
-            ) {
-              details = `${record.distanceKm} km`;
-            } else if (
-              exerciseType === "Jumps" &&
-              typeof record.jumps !== "undefined"
-            ) {
-              details = `${record.jumps} jumps`;
-            } else {
-              if (typeof record.repetitions !== "undefined")
-                details = `${record.repetitions} repetitions`;
-              else if (typeof record.steps !== "undefined")
-                details = `${record.steps} steps`;
-              else if (typeof record.timeMinutes !== "undefined")
-                details = `${record.timeMinutes} minutes`;
-              else if (typeof record.distanceKm !== "undefined")
-                details = `${record.distanceKm} km`;
-              else if (typeof record.jumps !== "undefined")
-                details = `${record.jumps} jumps`;
-              else details = "No specific details";
-            }
-
-            const recordItem = document.createElement("div");
-            recordItem.className =
-              "neuro-card bg-gray-700/80 p-4 rounded-lg border border-gray-600 flex justify-between items-center";
-            recordItem.setAttribute("role", "listitem");
-            recordItem.innerHTML = `
-            <div>
-              <div class="font-medium text-white">${record.exercise}</div>
-              <div class="text-sm text-gray-300">${details}</div>
-              <div class="text-xs text-gray-400">${dateString}</div>
+    <dialog id="modal-goals" class="bg-transparent backdrop:bg-black/80 p-0 w-full max-w-md">
+        <div class="glass-panel bg-slate-900 border border-slate-700 p-6 rounded-2xl shadow-2xl m-4">
+            <h3 class="text-xl font-bold mb-4 text-white">Configurar Metas Semanales</h3> 
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Minutos de Cardio</label>
+                    <input type="number" id="input-goal-cardio" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Repeticiones de Fuerza</label>
+                    <input type="number" id="input-goal-strength" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button id="btn-cancel-goals" class="flex-1 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white">Cancelar</button>
+                    <button id="btn-save-goals" class="flex-1 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 font-bold text-white">Guardar</button>
+                </div>
             </div>
-            <button onclick="deleteRecordItem('${record.date}')" class="neuro-btn px-3 py-1 bg-red-600 hover:bg-red-500 text-white rounded text-sm" aria-label="Delete ${record.exercise} record">
-              Delete
-            </button>
-          `;
-            if (recordsList) recordsList.appendChild(recordItem);
-          });
-        }
+        </div>
+    </dialog>
 
-        // Delete record function
-        window.deleteRecordItem = async function (date) {
-          if (
-            confirm("Are you sure you want to delete this exercise record?")
-          ) {
-            try {
-              await deleteRecord(date);
-              await displayRecordHistory();
-              await updateStats(currentViewPeriod, currentChartDateContext);
-            } catch (error) {
-              alert("Error deleting record: " + error.message);
-            }
-          }
-        };
-
-        // Stats and goals functionality
-        const GOALS_KEY = "exercise_goals_v1";
-        const defaultGoals = { cardioMin: 90, strengthReps: 300, steps: 35000 };
-        let currentViewPeriod = "week";
-        let currentChartDateContext = new Date();
-        let chart;
-
-        function loadGoals() {
-          const saved = localStorage.getItem(GOALS_KEY);
-          return saved ? JSON.parse(saved) : { ...defaultGoals };
-        }
-
-        function saveGoalsToLocal(goals) {
-          localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
-        }
-
-        function initGoalsUI() {
-          const goals = loadGoals();
-          const $cardio = document.getElementById("goal-cardio");
-          const $strength = document.getElementById("goal-strength");
-          const $steps = document.getElementById("goal-steps");
-          if ($cardio) $cardio.value = goals.cardioMin;
-          if ($strength) $strength.value = goals.strengthReps;
-          if ($steps) $steps.value = goals.steps;
-
-          const $save = document.getElementById("save-goals");
-          $save?.addEventListener("click", () => {
-            const newGoals = {
-              cardioMin: Math.max(0, parseInt($cardio?.value || 0)),
-              strengthReps: Math.max(0, parseInt($strength?.value || 0)),
-              steps: Math.max(0, parseInt($steps?.value || 0)),
-            };
-            saveGoalsToLocal(newGoals);
-            updateStats(currentViewPeriod, currentChartDateContext);
-            alert("Fitness goals saved successfully!");
-          });
-        }
-
-        function aggregateMetrics(records, period = "week") {
-          const now = new Date();
-          const start = new Date(now);
-          if (period === "week") {
-            const day = start.getDay() || 7;
-            start.setDate(start.getDate() - day + 1);
-            start.setHours(0, 0, 0, 0);
-          } else if (period === "month") {
-            start.setDate(1);
-            start.setHours(0, 0, 0, 0);
-          } else if (period === "year") {
-            start.setMonth(0, 1);
-            start.setHours(0, 0, 0, 0);
-          }
-          const inRange = records.filter((r) => new Date(r.date) >= start);
-
-          let cardioMin = 0,
-            strengthReps = 0,
-            steps = 0;
-
-          inRange.forEach((r) => {
-            if (
-              ["Running", "Cycling", "Plank"].includes(r.exercise) &&
-              r.timeMinutes
-            )
-              cardioMin += Number(r.timeMinutes) || 0;
-            if (r.exercise === "Walking" && r.steps)
-              steps += Number(r.steps) || 0;
-            if (
-              [
-                "Squats",
-                "Push-ups",
-                "Sit-ups",
-                "Lunges",
-                "Burpees",
-                "Dumbbell Rows",
-                "Shoulder Press",
-              ].includes(r.exercise) &&
-              r.repetitions
-            ) {
-              strengthReps += Number(r.repetitions) || 0;
-            }
-            if (r.exercise === "Running" && r.distanceKm)
-              cardioMin += (Number(r.distanceKm) || 0) * 6;
-            if (r.exercise === "Jump Rope" && r.jumps)
-              cardioMin += (Number(r.jumps) || 0) / 100;
-          });
-
-          // Generate chart data based on period
-          const labels = [];
-          const cardioData = [];
-          const strengthData = [];
-          const stepsData = [];
-
-          if (period === "week") {
-            // 7 days
-            for (let i = 6; i >= 0; i--) {
-              const date = new Date();
-              date.setDate(date.getDate() - i);
-              const dayStart = new Date(date);
-              dayStart.setHours(0, 0, 0, 0);
-              const dayEnd = new Date(date);
-              dayEnd.setHours(23, 59, 59, 999);
-
-              const dayRecords = inRange.filter((r) => {
-                const recordDate = new Date(r.date);
-                return recordDate >= dayStart && recordDate <= dayEnd;
-              });
-
-              let dayCardio = 0,
-                dayStrength = 0,
-                daySteps = 0;
-              dayRecords.forEach((r) => {
-                if (
-                  ["Running", "Cycling", "Plank"].includes(r.exercise) &&
-                  r.timeMinutes
-                )
-                  dayCardio += Number(r.timeMinutes) || 0;
-                if (r.exercise === "Walking" && r.steps)
-                  daySteps += Number(r.steps) || 0;
-                if (
-                  [
-                    "Squats",
-                    "Push-ups",
-                    "Sit-ups",
-                    "Lunges",
-                    "Burpees",
-                    "Dumbbell Rows",
-                    "Shoulder Press",
-                  ].includes(r.exercise) &&
-                  r.repetitions
-                ) {
-                  dayStrength += Number(r.repetitions) || 0;
-                }
-                if (r.exercise === "Running" && r.distanceKm)
-                  dayCardio += (Number(r.distanceKm) || 0) * 6;
-                if (r.exercise === "Jump Rope" && r.jumps)
-                  dayCardio += (Number(r.jumps) || 0) / 100;
-              });
-
-              labels.push(
-                date.toLocaleDateString("en-US", { weekday: "short" })
-              );
-              cardioData.push(dayCardio);
-              strengthData.push(dayStrength);
-              stepsData.push(Math.round(daySteps / 1000)); // Steps in thousands
-            }
-          } else if (period === "month") {
-            // Last 30 days, grouped by week
-            for (let i = 3; i >= 0; i--) {
-              const weekEnd = new Date();
-              weekEnd.setDate(weekEnd.getDate() - i * 7);
-              const weekStart = new Date(weekEnd);
-              weekStart.setDate(weekStart.getDate() - 6);
-              weekStart.setHours(0, 0, 0, 0);
-              weekEnd.setHours(23, 59, 59, 999);
-
-              const weekRecords = inRange.filter((r) => {
-                const recordDate = new Date(r.date);
-                return recordDate >= weekStart && recordDate <= weekEnd;
-              });
-
-              let weekCardio = 0,
-                weekStrength = 0,
-                weekSteps = 0;
-              weekRecords.forEach((r) => {
-                if (
-                  ["Running", "Cycling", "Plank"].includes(r.exercise) &&
-                  r.timeMinutes
-                )
-                  weekCardio += Number(r.timeMinutes) || 0;
-                if (r.exercise === "Walking" && r.steps)
-                  weekSteps += Number(r.steps) || 0;
-                if (
-                  [
-                    "Squats",
-                    "Push-ups",
-                    "Sit-ups",
-                    "Lunges",
-                    "Burpees",
-                    "Dumbbell Rows",
-                    "Shoulder Press",
-                  ].includes(r.exercise) &&
-                  r.repetitions
-                ) {
-                  weekStrength += Number(r.repetitions) || 0;
-                }
-                if (r.exercise === "Running" && r.distanceKm)
-                  weekCardio += (Number(r.distanceKm) || 0) * 6;
-                if (r.exercise === "Jump Rope" && r.jumps)
-                  weekCardio += (Number(r.jumps) || 0) / 100;
-              });
-
-              labels.push(`Week ${4 - i}`);
-              cardioData.push(weekCardio);
-              strengthData.push(weekStrength);
-              stepsData.push(Math.round(weekSteps / 1000));
-            }
-          } else {
-            // Year - 12 months
-            for (let i = 11; i >= 0; i--) {
-              const monthDate = new Date();
-              monthDate.setMonth(monthDate.getMonth() - i, 1);
-              monthDate.setHours(0, 0, 0, 0);
-              const monthEnd = new Date(monthDate);
-              monthEnd.setMonth(monthEnd.getMonth() + 1, 0);
-              monthEnd.setHours(23, 59, 59, 999);
-
-              const monthRecords = inRange.filter((r) => {
-                const recordDate = new Date(r.date);
-                return recordDate >= monthDate && recordDate <= monthEnd;
-              });
-
-              let monthCardio = 0,
-                monthStrength = 0,
-                monthSteps = 0;
-              monthRecords.forEach((r) => {
-                if (
-                  ["Running", "Cycling", "Plank"].includes(r.exercise) &&
-                  r.timeMinutes
-                )
-                  monthCardio += Number(r.timeMinutes) || 0;
-                if (r.exercise === "Walking" && r.steps)
-                  monthSteps += Number(r.steps) || 0;
-                if (
-                  [
-                    "Squats",
-                    "Push-ups",
-                    "Sit-ups",
-                    "Lunges",
-                    "Burpees",
-                    "Dumbbell Rows",
-                    "Shoulder Press",
-                  ].includes(r.exercise) &&
-                  r.repetitions
-                ) {
-                  monthStrength += Number(r.repetitions) || 0;
-                }
-                if (r.exercise === "Running" && r.distanceKm)
-                  monthCardio += (Number(r.distanceKm) || 0) * 6;
-                if (r.exercise === "Jump Rope" && r.jumps)
-                  monthCardio += (Number(r.jumps) || 0) / 100;
-              });
-
-              labels.push(
-                monthDate.toLocaleDateString("en-US", { month: "short" })
-              );
-              cardioData.push(monthCardio);
-              strengthData.push(monthStrength);
-              stepsData.push(Math.round(monthSteps / 1000));
-            }
-          }
-
-          return {
-            cardioMin,
-            strengthReps,
-            steps,
-            chartData: {
-              labels,
-              datasets: [
-                {
-                  label: "Cardio (min)",
-                  data: cardioData,
-                  borderColor: "#3b82f6",
-                  backgroundColor: "rgba(59, 130, 246, 0.1)",
-                  tension: 0.3,
-                  fill: false,
-                },
-                {
-                  label: "Strength (reps)",
-                  data: strengthData,
-                  borderColor: "#10b981",
-                  backgroundColor: "rgba(16, 185, 129, 0.1)",
-                  tension: 0.3,
-                  fill: false,
-                },
-                {
-                  label: "Steps (1000s)",
-                  data: stepsData,
-                  borderColor: "#8b5cf6",
-                  backgroundColor: "rgba(139, 92, 246, 0.1)",
-                  tension: 0.3,
-                  fill: false,
-                },
-              ],
-            },
-          };
-        }
-
-        async function updateStats(
-          period = currentViewPeriod,
-          context = currentChartDateContext
-        ) {
-          const records = await getRecords();
-          const goals = loadGoals();
-          const agg = aggregateMetrics(records, period);
-
-          // Update title based on period
-          const progressTitle = document.getElementById("progress-title");
-          if (progressTitle) {
-            progressTitle.textContent =
-              period === "week"
-                ? "Weekly Progress"
-                : period === "month"
-                ? "Monthly Progress"
-                : "Yearly Progress";
-          }
-
-          const $c = document.getElementById("stat-cardio");
-          const $s = document.getElementById("stat-strength");
-          const $p = document.getElementById("stat-steps");
-          if ($c) $c.textContent = Math.round(agg.cardioMin);
-          if ($s) $s.textContent = agg.strengthReps;
-          if ($p) $p.textContent = agg.steps;
-
-          const pct = (v, g) =>
-            Math.max(0, Math.min(100, Math.round((v / g) * 100)));
-          const cardioBar = document.getElementById("bar-cardio");
-          const strengthBar = document.getElementById("bar-strength");
-          const stepsBar = document.getElementById("bar-steps");
-
-          if (cardioBar) {
-            const cardioPercent = pct(agg.cardioMin, goals.cardioMin || 1);
-            cardioBar.style.width = cardioPercent + "%";
-            cardioBar.parentElement.setAttribute(
-              "aria-valuenow",
-              cardioPercent
-            );
-          }
-          if (strengthBar) {
-            const strengthPercent = pct(
-              agg.strengthReps,
-              goals.strengthReps || 1
-            );
-            strengthBar.style.width = strengthPercent + "%";
-            strengthBar.parentElement.setAttribute(
-              "aria-valuenow",
-              strengthPercent
-            );
-          }
-          if (stepsBar) {
-            const stepsPercent = pct(agg.steps, goals.steps || 1);
-            stepsBar.style.width = stepsPercent + "%";
-            stepsBar.parentElement.setAttribute("aria-valuenow", stepsPercent);
-          }
-
-          // Update chart - FIXED VERSION
-          const ctx = document.getElementById("progress-chart");
-          if (ctx) {
-            // Destroy existing chart first
-            if (chart) {
-              chart.destroy();
-              chart = null;
-            }
-
-            // Create new chart with proper responsive settings
-            chart = new Chart(ctx, {
-              type: "line",
-              data: agg.chartData,
-              options: {
-                responsive: true,
-                maintainAspectRatio: false, // This allows the chart to fill the container
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                    grid: {
-                      color: "rgba(75, 85, 99, 0.3)",
-                    },
-                    ticks: {
-                      color: "#9ca3af",
-                    },
-                  },
-                  x: {
-                    grid: {
-                      display: false,
-                    },
-                    ticks: {
-                      color: "#9ca3af",
-                    },
-                  },
-                },
-                plugins: {
-                  legend: {
-                    labels: {
-                      color: "#e5e7eb",
-                    },
-                  },
-                  tooltip: {
-                    mode: "index",
-                    intersect: false,
-                    backgroundColor: "rgba(31, 41, 55, 0.9)",
-                    titleColor: "#e5e7eb",
-                    bodyColor: "#e5e7eb",
-                    borderColor: "#4b5563",
-                    borderWidth: 1,
-                  },
-                },
-                interaction: {
-                  mode: "nearest",
-                  axis: "x",
-                  intersect: false,
-                },
-              },
-            });
-          }
-
-          currentViewPeriod = period;
-          currentChartDateContext = context;
-        }
-
-        // Export/Import functionality
-        async function exportJSON() {
-          const data = await getRecords();
-          const blob = new Blob([JSON.stringify(data, null, 2)], {
-            type: "application/json",
-          });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `exercise-data-${new Date()
-            .toISOString()
-            .slice(0, 10)}.json`;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          URL.revokeObjectURL(url);
-        }
-
-        async function importJSON(evt) {
-          const file = evt.target.files?.[0];
-          if (!file) return;
-          try {
-            const text = await file.text();
-            const items = JSON.parse(text);
-            for (const rec of items) {
-              let attempt = 0;
-              while (attempt < 5) {
-                try {
-                  await saveRecord(rec);
-                  break;
-                } catch (e) {
-                  rec.date = new Date(
-                    new Date(rec.date).getTime() + 1
-                  ).toISOString();
-                  attempt++;
-                }
-              }
-            }
-            await updateStats(currentViewPeriod, currentChartDateContext);
-            await displayRecordHistory();
-            alert("Exercise data imported successfully!");
-          } catch (error) {
-            alert("Error importing data. Please check your file format.");
-          }
-        }
-
-        // Event listeners
-        if (saveExerciseBtn) {
-          saveExerciseBtn.addEventListener("click", handleSaveExercise);
-        }
-
-        if (cancelInputBtn) {
-          cancelInputBtn.addEventListener("click", () => {
-            if (exerciseInputSection)
-              exerciseInputSection.classList.add("hidden");
-            if (exerciseSelectionSection)
-              exerciseSelectionSection.classList.remove("hidden");
-          });
-        }
-
-        // Keyboard shortcut
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Enter") {
-            const inputOpen = !document
-              .getElementById("exercise-input")
-              ?.classList.contains("hidden");
-            if (inputOpen) document.getElementById("save-exercise")?.click();
-          }
-        });
-
-        // Period chips
-        document.querySelectorAll(".view-chip").forEach((chip) => {
-          chip.addEventListener("click", () => {
-            document.querySelectorAll(".view-chip").forEach((c) => {
-              c.classList.remove("active", "bg-blue-600", "text-white");
-              c.classList.add("bg-gray-600", "text-gray-300");
-              c.setAttribute("aria-selected", "false");
-            });
-            chip.classList.add("active", "bg-blue-600", "text-white");
-            chip.classList.remove("bg-gray-600", "text-gray-300");
-            chip.setAttribute("aria-selected", "true");
-            updateStats(chip.dataset.period, new Date());
-          });
-        });
-
-        // Export/Import event listeners
-        document
-          .getElementById("export-json")
-          ?.addEventListener("click", exportJSON);
-        document
-          .getElementById("import-json")
-          ?.addEventListener("change", importJSON);
-
-        // Initialize
-        initGoalsUI();
-        updateStats("week", new Date());
-      });
-    </script>
-  </body>
+    <script src="script.js"></script>
+</body>
 </html>
