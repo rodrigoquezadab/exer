@@ -1,697 +1,172 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // --- Configuración y Estado ---
-  const EXERCISES = {
-    // Aeróbico / Cardio
-    Correr: { type: "Distancia", unit: "km", icon: "🏃", baseUnit: "Tiempo", conversion: 5 }, // 1km = 5 min Cardio
-    Caminar: { type: "Pasos", unit: "pasos", icon: "🚶", baseUnit: "Tiempo", conversion: 1 / 1000 }, // 1000 pasos = 1 min Cardio
-    Bicicleta: { type: "Tiempo", unit: "min", icon: "🚴", baseUnit: "Tiempo", conversion: 1 }, // 1 min = 1 min Cardio
-    
-    // Fuerza General
-    "Levantar Pesas": { type: "Repeticiones", unit: "reps", icon: "🏋️", baseUnit: "Repeticiones", conversion: 1 }, 
-    Sentadillas: { type: "Repeticiones", unit: "reps", icon: "🍑", baseUnit: "Repeticiones", conversion: 1 },
-    Flexiones: { type: "Repeticiones", unit: "reps", icon: "💪", baseUnit: "Repeticiones", conversion: 1 },
-    
-    // Abdominales y Core
-    "Plancha": { type: "Tiempo", unit: "min", icon: "🪵", baseUnit: "Tiempo", conversion: 1 }, // Contribuye a Cardio/Tiempo
-    "Crunches": { type: "Repeticiones", unit: "reps", icon: "🍫", baseUnit: "Repeticiones", conversion: 1 },
-    "Elev. Piernas": { type: "Repeticiones", unit: "reps", icon: "🦵", baseUnit: "Repeticiones", conversion: 1 },
-    "Giros Rusos": { type: "Repeticiones", unit: "reps", icon: "🌪️", baseUnit: "Repeticiones", conversion: 1 },
-    "Escaladores": { type: "Repeticiones", unit: "reps", icon: "🧗", baseUnit: "Repeticiones", conversion: 1 },
-    "Tijeras": { type: "Repeticiones", unit: "reps", icon: "✂️", baseUnit: "Repeticiones", conversion: 1 }
-  };
+const API = 'https://seashell-jellyfish-767109.hostingersite.com/api/sync.php';
+let state = { exercise: '', unit: '', icon: '', id: null };
+let cloudData = { records: [], weightRecords: [] };
+let statsPeriod = 'week', referenceDate = new Date();
 
-  let currentExercise = null;
-  let chartInstance = null;
-  let weightChartInstance = null;
-  
-  // Metas por defecto
-  let goals = {
-      cardioMin: 90,
-      strengthReps: 300
-  };
+// Configuración de iconos y unidades para el renderizado
+const EX_CONFIG = {
+    Correr: { icon: '🏃', unit: 'km' },
+    Flexiones: { icon: '💪', unit: 'reps' },
+    Sentadillas: { icon: '🍑', unit: 'reps' },
+    Plancha: { icon: '🪵', unit: 'min' },
+    "Bench Press": { icon: '🏋️‍♂️', unit: 'reps' },
+    Abdominales: { icon: '🧘', unit: 'reps' },
+    Peso: { icon: '⚖️', unit: 'kg' }
+};
 
-  // --- IndexedDB Setup ---
-  const DB_NAME = "FitTrackDB";
-  const DB_VERSION = 2; 
-  const STORE_RECORDS = "exerciseRecords"; 
-  const STORE_WEIGHTS = "weightRecords"; 
-  let db;
+window.onload = () => load();
 
-  const initDB = () => {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
-      request.onupgradeneeded = (e) => {
-        db = e.target.result;
-        // 1. Store de Ejercicios
-        if (!db.objectStoreNames.contains(STORE_RECORDS)) {
-          db.createObjectStore(STORE_RECORDS, { keyPath: "date" });
+async function load() {
+    try {
+        const r = await fetch(API);
+        if (!r.ok) throw new Error("Servidor no responde");
+        const d = await r.json();
+        if (d.success) {
+            cloudData = d;
+            updateStatus(true);
+            renderHistory(d.records, d.weightRecords);
+            if (!document.getElementById('view-stats').classList.contains('hidden')) renderStats();
+        } else {
+            throw new Error(d.message);
         }
-        // 2. Store de Peso
-        if (!db.objectStoreNames.contains(STORE_WEIGHTS)) {
-          db.createObjectStore(STORE_WEIGHTS, { keyPath: "date" });
-        }
-      };
-      request.onsuccess = (e) => {
-        db = e.target.result;
-        resolve(db);
-      };
-      request.onerror = (e) => reject(e);
+    } catch (e) { 
+        console.error("Error cargando de Hostinger:", e);
+        updateStatus(false); 
+    }
+}
+
+function updateStatus(online) {
+    const text = document.getElementById('status-text');
+    const dot = document.getElementById('status-dot');
+    text.innerText = online ? "ONLINE" : "OFFLINE";
+    text.className = online ? "text-emerald-500" : "text-rose-500";
+    dot.className = online ? "w-2 h-2 bg-emerald-500 rounded-full animate-pulse" : "w-2 h-2 bg-rose-500 rounded-full";
+}
+
+function setPeriod(p) {
+    statsPeriod = p;
+    document.querySelectorAll('.period-btn').forEach(b => {
+        b.classList.remove('bg-indigo-600');
+        b.classList.add('bg-slate-800');
+        const label = p === 'week' ? 'semana' : p === 'month' ? 'mes' : 'año';
+        if (b.innerText.toLowerCase() === label) b.classList.replace('bg-slate-800', 'bg-indigo-600');
     });
-  };
+    renderStats();
+}
 
-  const dbAction = (storeName, mode, callback) => {
-    // CORRECCIÓN CLAVE: Se eliminó un 'new' para que la función devuelva una nueva promesa correctamente.
-    return new Promise(async (resolve, reject) => { 
-      if (!db) await initDB();
-      if (!db.objectStoreNames.contains(storeName)) {
-        console.error(`Store name ${storeName} not found.`);
-        return reject(new Error(`Store name ${storeName} not found.`));
-      }
-      const tx = db.transaction(storeName, mode);
-      const store = tx.objectStore(storeName);
-      const req = callback(store);
-      
-      // Gestión de la promesa usando los eventos de la transacción
-      tx.oncomplete = (e) => resolve(req.result); 
-      tx.onerror = (e) => reject(e.target.error); 
-      req.onerror = (e) => reject(e.target.error); 
+function changeDate(delta) {
+    if (statsPeriod === 'week') referenceDate.setDate(referenceDate.getDate() + (delta * 7));
+    else if (statsPeriod === 'month') referenceDate.setMonth(referenceDate.getMonth() + delta);
+    else if (statsPeriod === 'year') referenceDate.setFullYear(referenceDate.getFullYear() + delta);
+    renderStats();
+}
+
+function getPeriodRange() {
+    let start = new Date(referenceDate), end = new Date(referenceDate);
+    if (statsPeriod === 'week') {
+        start.setDate(start.getDate() - start.getDay()); start.setHours(0,0,0,0);
+        end.setDate(start.getDate() + 6); end.setHours(23,59,59,999);
+    } else if (statsPeriod === 'month') {
+        start.setDate(1); start.setHours(0,0,0,0);
+        end.setMonth(start.getMonth() + 1); end.setDate(0); end.setHours(23,59,59,999);
+    } else if (statsPeriod === 'year') {
+        start.setMonth(0,1); start.setHours(0,0,0,0);
+        end.setMonth(11,31); end.setHours(23,59,59,999);
+    }
+    return { start, end };
+}
+
+function renderStats() {
+    const range = getPeriodRange();
+    document.getElementById('current-period-label').innerText = `${range.start.toLocaleDateString()} - ${range.end.toLocaleDateString()}`;
+
+    const filterFn = r => { const d = new Date(r.fecha_iso); return d >= range.start && d <= range.end; };
+    const filteredEx = cloudData.records.filter(filterFn);
+    const filteredW = cloudData.weightRecords.filter(filterFn).sort((a,b) => new Date(a.fecha_iso) - new Date(b.fecha_iso));
+
+    const exLabels = [...new Set(filteredEx.map(r => r.ejercicio))];
+    const exData = exLabels.map(l => filteredEx.filter(r => r.ejercicio === l).reduce((a,b) => a + parseFloat(b.valor), 0));
+
+    const draw = (id, labels, data, type, color) => {
+        const canvas = document.getElementById(id);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (window[id+'Chart']) window[id+'Chart'].destroy();
+        window[id+'Chart'] = new Chart(ctx, {
+            type, data: { labels, datasets: [{ data, backgroundColor: color, borderColor: color, tension: 0.3 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+    };
+
+    draw('chartEx', exLabels, exData, 'bar', '#6366f1');
+    draw('chartWeight', filteredW.map(w => new Date(w.fecha_iso).toLocaleDateString()), filteredW.map(w => w.peso), 'line', '#10b981');
+}
+
+async function handleSave() {
+    const val = document.getElementById('main-input').value;
+    if(!val) return;
+    const method = state.id ? 'PUT' : 'POST';
+    const payload = state.exercise === 'Peso' 
+        ? (state.id ? { id: state.id, value: val, type: 'weight' } : { weightRecords: [{ date: new Date().toISOString(), weight: val }] })
+        : (state.id ? { id: state.id, value: val, type: 'exercise' } : { records: [{ date: new Date().toISOString(), exercise: state.exercise, type: state.unit, value: val }] });
+
+    try {
+        await fetch(API, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        closeInput(); load();
+    } catch (err) { alert("Error al guardar"); }
+}
+
+function openInput(name, unit, icon, val = '', id = null) {
+    state = { exercise: name, unit, icon, id };
+    showView('register');
+    document.getElementById('input-title').innerText = id ? `Editando: ${icon} ${name}` : `${icon} ${name} (${unit})`;
+    document.getElementById('main-input').value = val;
+    document.getElementById('input-panel').classList.remove('hidden');
+    document.getElementById('exercise-selection').classList.add('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function closeInput() { 
+    document.getElementById('input-panel').classList.add('hidden'); 
+    document.getElementById('exercise-selection').classList.remove('hidden'); 
+}
+
+function showView(v) {
+    ['register', 'stats', 'history'].forEach(x => {
+        document.getElementById('view-'+x).classList.add('hidden');
+        document.getElementById('btn-nav-'+x).className = "flex-1 py-2 rounded-xl text-sm font-medium text-slate-400";
     });
-  };
-
-  // --- Funciones de Gestión de Datos (NUEVAS/MODIFICADAS) ---
-
-  // ... (deleteAllData, restoreData, saveRecord, getAllRecords, deleteRecord, saveWeightRecord, getAllWeightRecords se mantienen igual o con la corrección de dbAction aplicada) ...
-  
-  // NUEVA: Función para eliminar TODOS los registros y metas
-  async function deleteAllData() {
-      if (!confirm("¡ADVERTENCIA! Estás a punto de eliminar TODOS tus datos de ejercicios y peso, así como tus metas. Esta acción es IRREVERSIBLE. ¿Continuar?")) {
-          return false;
-      }
-
-      try {
-          // 1. Eliminar Registros de Ejercicios
-          await dbAction(STORE_RECORDS, "readwrite", (store) => store.clear());
-          
-          // 2. Eliminar Registros de Peso
-          await dbAction(STORE_WEIGHTS, "readwrite", (store) => store.clear());
-
-          // 3. Eliminar Metas
-          localStorage.removeItem('fitTrackGoals');
-          goals = { cardioMin: 90, strengthReps: 300 };
-          
-          alert("Todos los datos (ejercicios, peso y metas) han sido eliminados exitosamente. La aplicación se recargará.");
-          window.location.reload(); 
-          return true;
-      } catch (error) {
-          console.error("Error al eliminar todos los datos:", error);
-          alert("Ocurrió un error al intentar eliminar los datos.");
-          return false;
-      }
-  }
-
-  // MODIFICADA: Lógica de Restauración con Opciones
-  async function restoreData(file) {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-          try {
-              const data = JSON.parse(e.target.result);
-              
-              // 1. Preguntar al usuario qué tipo de importación quiere
-              const choice = prompt(
-                  "¿Cómo desea importar los datos?\n\n" +
-                  "1. REEMPLAZAR TODO: Elimina todos los datos locales y los reemplaza con el respaldo.\n" +
-                  "2. AGREGAR REGISTROS (Recomendado): Conserva los datos locales y añade los del respaldo (los registros con FECHAS duplicadas serán SOBRESCRITOS por los del respaldo).\n\n" +
-                  "Ingrese '1' o '2'."
-              );
-
-              if (choice !== '1' && choice !== '2') {
-                  alert("Importación cancelada.");
-                  return;
-              }
-
-              let addedRecords = 0;
-              let addedWeights = 0;
-
-              if (choice === '1') {
-                  // Opción 1: REEMPLAZAR TODO
-                  if (!confirm("Confirmar REEMPLAZO TOTAL. ¿Está seguro de que desea eliminar todos los datos locales ANTES de restaurar el respaldo?")) {
-                      return;
-                  }
-                  
-                  // Limpiar ambas bases de datos y metas antes de restaurar
-                  await dbAction(STORE_RECORDS, "readwrite", (store) => store.clear());
-                  await dbAction(STORE_WEIGHTS, "readwrite", (store) => store.clear());
-                  localStorage.removeItem('fitTrackGoals');
-              }
-              
-              // 2. Restaurar Metas
-              if(data.goals) {
-                  goals = data.goals;
-                  localStorage.setItem('fitTrackGoals', JSON.stringify(goals));
-              }
-
-              // Función auxiliar para restaurar registros en un store
-              const restoreStore = async (storeName, recordsArray) => {
-                  if (recordsArray && Array.isArray(recordsArray)) {
-                      const tx = db.transaction(storeName, "readwrite");
-                      const store = tx.objectStore(storeName);
-                      let count = 0;
-
-                      for (const record of recordsArray) {
-                          try {
-                              // Usamos .put() que inserta o actualiza si la clave (date) existe.
-                              store.put(record); 
-                              count++;
-                          } catch (err) {
-                              // Error al insertar (ej. dato mal formado)
-                              console.warn(`Skipping record in ${storeName} due to error:`, record, err);
-                          }
-                      }
-                      await new Promise(resolve => { tx.oncomplete = resolve; });
-                      return count;
-                  }
-                  return 0;
-              };
-
-              // 3. Restaurar Registros de Ejercicio
-              addedRecords = await restoreStore(STORE_RECORDS, data.records);
-              
-              // 4. Restaurar Registros de Peso
-              addedWeights = await restoreStore(STORE_WEIGHTS, data.weightRecords);
-              
-              alert(`Restauración completada.\n\n${addedRecords} ejercicios y ${addedWeights} pesos procesados.`);
-              updateUI();
-
-          } catch (err) {
-              alert("Error al leer o analizar el archivo de respaldo. Asegúrate de que sea un JSON válido.");
-              console.error(err);
-          }
-      };
-      reader.readAsText(file);
-  }
-  
-  // --- Funciones de Ejercicios y Peso (se mantienen igual) ---
-
-  async function saveRecord(value) {
-      const record = {
-          date: new Date().toISOString(),
-          exercise: currentExercise,
-          type: EXERCISES[currentExercise].type,
-          value: parseFloat(value)
-      };
-      await dbAction(STORE_RECORDS, "readwrite", (store) => store.add(record));
-      updateUI();
-  }
-
-  async function getAllRecords() {
-      return await dbAction(STORE_RECORDS, "readonly", (store) => store.getAll()) || [];
-  }
-
-  async function deleteRecord(dateKey) {
-      await dbAction(STORE_RECORDS, "readwrite", (store) => store.delete(dateKey));
-      updateUI();
-  }
-  
-  async function saveWeightRecord(weight, date) {
-      const record = {
-          date: date,
-          weight: parseFloat(weight)
-      };
-      await dbAction(STORE_WEIGHTS, "readwrite", (store) => store.put(record));
-      updateUI();
-  }
-
-  async function getAllWeightRecords() {
-      return await dbAction(STORE_WEIGHTS, "readonly", (store) => store.getAll()) || [];
-  }
-
-
-  // --- Lógica de Agregación de Datos REALES (NUEVA) ---
-
-  function aggregateRecords(records, period) {
-      const results = {};
-      let labels = [];
-      let title = "";
-
-      // Función auxiliar para obtener el inicio de la semana/mes/año
-      const getPeriodStart = (date, period) => {
-          const d = new Date(date);
-          d.setHours(0, 0, 0, 0);
-          if (period === 'week') {
-              const dayOfWeek = (d.getDay() + 6) % 7; // Lunes = 0
-              d.setDate(d.getDate() - dayOfWeek);
-              return d.toISOString().split('T')[0];
-          } else if (period === 'month') {
-              d.setDate(1);
-              return d.toISOString().split('T')[0].substring(0, 7); // YYYY-MM
-          } else if (period === 'year') {
-              d.setMonth(0, 1);
-              return d.getFullYear();
-          }
-      };
-
-      if (period === 'week') {
-          // Lógica de agregación por día de la semana
-          labels = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-          title = "Resumen de la Semana";
-          labels.forEach(l => results[l] = 0);
-          
-          const now = new Date();
-          const dayOfWeek = (now.getDay() + 6) % 7;
-          const startOfWeek = new Date(now.setDate(now.getDate() - dayOfWeek));
-          startOfWeek.setHours(0,0,0,0);
-
-          records.forEach(r => {
-              const recordDate = new Date(r.date);
-              // Solo considerar registros de la semana actual
-              if (recordDate >= startOfWeek) {
-                  const dayIndex = (recordDate.getDay() + 6) % 7; // 0=Lun, 6=Dom
-                  const dayLabel = labels[dayIndex];
-                  
-                  // Suma todos los valores (incluyendo fuerza y cardio en un solo total por día)
-                  results[dayLabel] += r.value; 
-              }
-          });
-          
-      } else if (period === 'month') {
-          // Lógica de agregación por día (si fuera diario) o por semana (como los datos fijos lo tenían)
-          // Para simplificar la implementación, vamos a sumar el total de actividad por mes, pero
-          // mantendremos la estructura para que los datos sean dinámicos.
-          
-          // Implementación por mes: sumatoria total por cada mes en los últimos 12 meses
-          labels = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-          title = "Resumen Anual (Actividad Total por Mes)";
-          labels.forEach(l => results[l] = 0);
-          
-          records.forEach(r => {
-              const monthIndex = new Date(r.date).getMonth();
-              const monthLabel = labels[monthIndex];
-              results[monthLabel] += r.value;
-          });
-
-      } else if (period === 'year') {
-          // Lógica de agregación por año
-          title = "Resumen Histórico por Año";
-          const uniqueYears = [...new Set(records.map(r => new Date(r.date).getFullYear()))].sort();
-          labels = uniqueYears.length > 0 ? uniqueYears : [new Date().getFullYear()];
-
-          labels.forEach(l => results[l] = 0);
-          
-          records.forEach(r => {
-              const year = new Date(r.date).getFullYear();
-              if (results.hasOwnProperty(year)) {
-                  results[year] += r.value;
-              }
-          });
-      }
-
-      const data = labels.map(label => results[label]);
-      
-      return { labels, data, title };
-  }
-
-
-  // --- UI & DOM ---
-  function switchTab(tabName) {
-      // Ocultar todas las vistas
-      ['register', 'stats', 'weight', 'history'].forEach(v => {
-          document.getElementById(`view-${v}`).classList.add('hidden');
-          const btn = document.getElementById(`nav-${v}`);
-          btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-500/30');
-          btn.classList.add('text-slate-400', 'bg-slate-900/50');
-      });
-
-      // Mostrar seleccionada
-      document.getElementById(`view-${tabName}`).classList.remove('hidden');
-      const activeBtn = document.getElementById(`nav-${tabName}`);
-      activeBtn.classList.remove('text-slate-400', 'bg-slate-900/50');
-      activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-500/30');
-
-      if(tabName === 'stats') renderChart('week');
-      if(tabName === 'weight') renderWeightTracker();
-      if(tabName === 'history') renderHistory();
-  }
-
-  // Manejo de Inputs Dinámicos (Ejercicios)
-  document.querySelectorAll('[data-exercise]').forEach(btn => {
-      btn.addEventListener('click', () => {
-          currentExercise = btn.dataset.exercise;
-          const info = EXERCISES[currentExercise];
-          
-          document.getElementById('current-exercise-name').textContent = currentExercise;
-          document.getElementById('current-exercise-icon').textContent = info.icon;
-          document.getElementById('dynamic-label').textContent = `${info.type} (${info.unit})`;
-          document.getElementById('dynamic-input').value = '';
-          
-          document.getElementById('exercise-selection').classList.add('hidden');
-          document.getElementById('exercise-input').classList.remove('hidden');
-          document.getElementById('dynamic-input').focus();
-      });
-  });
-
-  document.getElementById('cancel-input').addEventListener('click', () => {
-      document.getElementById('exercise-input').classList.add('hidden');
-      document.getElementById('exercise-selection').classList.remove('hidden');
-  });
-
-  document.getElementById('save-exercise').addEventListener('click', async () => {
-      const val = document.getElementById('dynamic-input').value;
-      if(!val || parseFloat(val) <= 0) return alert("Ingresa un valor válido (mayor a 0)");
-      
-      const saveBtn = document.getElementById('save-exercise');
-      saveBtn.textContent = 'Guardando...';
-      saveBtn.disabled = true;
-
-      await saveRecord(val);
-      
-      saveBtn.textContent = 'Guardar Actividad';
-      saveBtn.disabled = false;
-      document.getElementById('exercise-input').classList.add('hidden');
-      document.getElementById('exercise-selection').classList.remove('hidden');
-  });
-
-  async function updateUI() {
-      const records = await getAllRecords();
-      updateGoalsProgress(records);
-      
-      if(!document.getElementById('view-history').classList.contains('hidden')) renderHistory();
-      // Asegura que la gráfica se actualice con la nueva lógica si la pestaña está activa
-      if(!document.getElementById('view-stats').classList.contains('hidden')) {
-          const activePeriod = document.querySelector('.view-period-btn.active')?.dataset.period || 'week';
-          renderChart(activePeriod);
-      }
-      if(!document.getElementById('view-weight').classList.contains('hidden')) renderWeightTracker();
-  }
-
-  function updateGoalsProgress(records) {
-      const now = new Date();
-      const dayOfWeek = (now.getDay() + 6) % 7;
-      const startOfWeek = new Date(now.setDate(now.getDate() - dayOfWeek));
-      startOfWeek.setHours(0,0,0,0);
-
-      const weekRecords = records.filter(r => new Date(r.date) >= startOfWeek);
-
-      let totalCardio = 0;
-      let totalStrength = 0;
-
-      weekRecords.forEach(r => {
-          const info = EXERCISES[r.exercise];
-          const type = info?.baseUnit;
-          const conversion = info?.conversion || 1;
-          
-          if (type === 'Tiempo') totalCardio += r.value * conversion;
-          if (type === 'Repeticiones') totalStrength += r.value * conversion;
-      });
-
-      document.getElementById('stat-cardio').textContent = Math.round(totalCardio);
-      document.getElementById('stat-strength').textContent = Math.round(totalStrength);
-      
-      const cardioPct = Math.min(100, (totalCardio / goals.cardioMin) * 100);
-      const strengthPct = Math.min(100, (totalStrength / goals.strengthReps) * 100);
-      
-      document.getElementById('bar-cardio').style.width = `${cardioPct}%`;
-      document.getElementById('bar-strength').style.width = `${strengthPct}%`;
-  }
-
-  async function renderWeightTracker() {
-      const records = await getAllWeightRecords();
-      const list = document.getElementById('weight-records-list');
-      list.innerHTML = '';
-      
-      records.sort((a,b) => new Date(b.date) - new Date(a.date));
-
-      if(records.length === 0) {
-          document.getElementById('no-weight-records-message').classList.remove('hidden');
-      } else {
-          document.getElementById('no-weight-records-message').classList.add('hidden');
-      }
-
-      records.forEach(r => {
-          const date = new Date(r.date).toLocaleDateString();
-          const item = document.createElement('div');
-          item.className = "glass-panel p-4 rounded-xl flex justify-between items-center bg-slate-800/50";
-          item.innerHTML = `
-              <div>
-                  <h4 class="font-bold text-emerald-300 text-lg">${r.weight} kg</h4>
-                  <p class="text-sm text-slate-400">Registrado el ${date}</p>
-              </div>
-          `;
-          list.appendChild(item);
-      });
-      
-      if(weightChartInstance) weightChartInstance.destroy();
-      
-      const recentRecords = records.slice(0, 30).reverse(); 
-
-      const labels = recentRecords.map(r => new Date(r.date).toLocaleDateString('es-CL', { month: 'short', day: 'numeric' }));
-      const data = recentRecords.map(r => r.weight);
-      
-      const ctx = document.getElementById('weightChart').getContext('2d');
-      weightChartInstance = new Chart(ctx, {
-          type: 'line',
-          data: {
-              labels: labels,
-              datasets: [{
-                  label: 'Peso Corporal (kg)',
-                  data: data,
-                  borderColor: '#10b981',
-                  backgroundColor: 'rgba(16, 185, 129, 0.2)',
-                  borderWidth: 3,
-                  tension: 0.3,
-                  fill: true,
-                  pointBackgroundColor: '#fff'
-              }]
-          },
-          options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { display: false } },
-              scales: {
-                  y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#94a3b8' } },
-                  x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-              }
-          }
-      });
-  }
-
-
-  // --- Función renderChart MODIFICADA para usar datos reales ---
-  async function renderChart(period) {
-      const records = await getAllRecords();
-      const ctx = document.getElementById('exerciseChart').getContext('2d');
-      
-      if(chartInstance) chartInstance.destroy();
-
-      // Utiliza la nueva función de agregación para obtener datos reales
-      const { labels, data, title } = aggregateRecords(records, period);
-
-      document.getElementById('current-period-display').textContent = title;
-
-      // Determinar los datos a usar (datos reales o un array de ceros si no hay registros)
-      const chartData = records.length > 0 ? data : labels.map(() => 0);
-      const backgroundOpacity = records.length > 0 ? 0.7 : 0.2; // Menos opacidad si no hay datos
-
-      chartInstance = new Chart(ctx, {
-          type: 'bar',
-          data: {
-              labels: labels,
-              datasets: [{
-                  label: 'Actividad Total (Unidades)',
-                  data: chartData,
-                  backgroundColor: `rgba(129, 140, 248, ${backgroundOpacity})`,
-                  borderColor: '#818cf8', 
-                  borderWidth: 1,
-                  borderRadius: 4
-              }]
-          },
-          options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { display: false } },
-              scales: {
-                  y: { 
-                      grid: { color: 'rgba(255,255,255,0.1)' }, 
-                      ticks: { color: '#94a3b8' },
-                      // Si no hay datos, asegura que el eje Y comience en 0 y tenga una escala mínima para verse
-                      suggestedMax: records.length === 0 ? 10 : undefined 
-                  },
-                  x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-              }
-          }
-      });
-  }
-  
-  document.querySelectorAll('.view-period-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-          document.querySelectorAll('.view-period-btn').forEach(b => {
-              b.classList.remove('active', 'bg-indigo-600', 'text-white');
-              b.classList.add('bg-slate-800', 'text-slate-400', 'hover:bg-slate-700');
-          });
-          e.target.classList.add('active', 'bg-indigo-600', 'text-white');
-          e.target.classList.remove('bg-slate-800', 'text-slate-400', 'hover:bg-slate-700');
-          renderChart(e.target.dataset.period);
-      });
-  });
-
-  async function renderHistory() {
-      const records = await getAllRecords();
-      const list = document.getElementById('records-list');
-      list.innerHTML = '';
-      
-      records.sort((a,b) => new Date(b.date) - new Date(a.date));
-
-      if(records.length === 0) {
-          document.getElementById('no-records-message').classList.remove('hidden');
-          return;
-      } else {
-          document.getElementById('no-records-message').classList.add('hidden');
-      }
-
-      records.forEach(r => {
-          const date = new Date(r.date).toLocaleDateString();
-          const time = new Date(r.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          const info = EXERCISES[r.exercise] || {unit: ''};
-          
-          const item = document.createElement('div');
-          item.className = "glass-panel p-4 rounded-xl flex justify-between items-center transition hover:border-rose-500/50";
-          item.innerHTML = `
-              <div>
-                  <h4 class="font-bold text-indigo-300">${r.exercise}</h4>
-                  <p class="text-sm text-slate-400">${r.value} ${info.unit} <span class="text-slate-600">|</span> ${date} ${time}</p>
-              </div>
-              <button class="delete-btn text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-500 p-2 rounded-lg transition" data-date="${r.date}" title="Eliminar">
-                  <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3"></path></svg>
-              </button>
-          `;
-          list.appendChild(item);
-      });
-
-      document.querySelectorAll('.delete-btn').forEach(btn => {
-          btn.addEventListener('click', async (e) => {
-              if(confirm("¿Estás seguro de que quieres eliminar este registro permanentemente?")) {
-                const dateToDelete = e.target.closest('button').dataset.date;
-                await deleteRecord(dateToDelete);
-                alert("Registro eliminado.");
-              }
-          });
-      });
-  }
-
-
-  // --- Inicialización Eventos Globales ---
-  document.getElementById('nav-register').addEventListener('click', () => switchTab('register'));
-  document.getElementById('nav-stats').addEventListener('click', () => switchTab('stats'));
-  document.getElementById('nav-weight').addEventListener('click', () => switchTab('weight'));
-  document.getElementById('nav-history').addEventListener('click', () => switchTab('history'));
-
-  // Backup & Import
-  // NOTA: Se necesita la implementación de la función backupData para que este botón funcione.
-  // document.getElementById('btn-backup').addEventListener('click', backupData); 
-  document.getElementById('btn-delete-all').addEventListener('click', deleteAllData); 
-
-  document.getElementById('file-import').addEventListener('change', (e) => {
-      if(e.target.files.length > 0) {
-          restoreData(e.target.files[0]);
-      }
-  });
-  
-  document.getElementById('weight-date-input').valueAsDate = new Date();
-
-  // Weight Input Handler
-  document.getElementById('save-weight').addEventListener('click', async () => {
-      const weight = document.getElementById('weight-input').value;
-      const date = document.getElementById('weight-date-input').value;
-
-      if (!weight || parseFloat(weight) <= 0 || !date) {
-          return alert("Ingresa un peso y una fecha válidos.");
-      }
-      
-      const isoDate = new Date(date + 'T00:00:00.000Z').toISOString();
-      
-      try {
-          await saveWeightRecord(weight, isoDate);
-          document.getElementById('weight-input').value = '';
-          alert(`Peso de ${weight}kg guardado para el ${new Date(date).toLocaleDateString()}.`);
-      } catch (e) {
-          console.error(e);
-          alert("Error al guardar el peso. Inténtalo de nuevo.");
-      }
-  });
-
-
-  // Goals Modal Logic
-  const modal = document.getElementById('modal-goals');
-  document.getElementById('btn-set-goals').addEventListener('click', () => {
-      document.getElementById('input-goal-cardio').value = goals.cardioMin;
-      document.getElementById('input-goal-strength').value = goals.strengthReps;
-      modal.showModal();
-  });
-  document.getElementById('btn-cancel-goals').addEventListener('click', () => modal.close());
-  document.getElementById('btn-save-goals').addEventListener('click', () => {
-      const newCardio = parseInt(document.getElementById('input-goal-cardio').value);
-      const newStrength = parseInt(document.getElementById('input-goal-strength').value);
-
-      goals.cardioMin = newCardio > 0 ? newCardio : 90;
-      goals.strengthReps = newStrength > 0 ? newStrength : 300;
-      
-      localStorage.setItem('fitTrackGoals', JSON.stringify(goals));
-      document.getElementById('goal-cardio-display').textContent = goals.cardioMin;
-      document.getElementById('goal-strength-display').textContent = goals.strengthReps;
-      modal.close();
-      updateUI();
-  });
-
-  // Load Saved Goals from localStorage
-  const savedGoals = localStorage.getItem('fitTrackGoals');
-  if(savedGoals) {
-      goals = JSON.parse(savedGoals);
-      document.getElementById('goal-cardio-display').textContent = goals.cardioMin;
-      document.getElementById('goal-strength-display').textContent = goals.strengthReps;
-  }
-  
-  // Placeholder para la función backupData (necesaria para el botón)
-  async function backupData() {
-      try {
-          const records = await getAllRecords();
-          const weightRecords = await getAllWeightRecords();
-          const goalsData = goals;
-          
-          const backup = {
-              records: records,
-              weightRecords: weightRecords,
-              goals: goalsData,
-              timestamp: new Date().toISOString()
-          };
-
-          const json = JSON.stringify(backup, null, 2);
-          const blob = new Blob([json], { type: 'application/json' });
-          const url = URL.createObjectURL(blob);
-          
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `fitTrack_backup_${new Date().toISOString().split('T')[0]}.json`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          
-          alert("Respaldo de datos exitoso.");
-
-      } catch (error) {
-          console.error("Error al crear el respaldo:", error);
-          alert("Ocurrió un error al intentar respaldar los datos.");
-      }
-  }
-  // Añadir el listener de backupData aquí
-  document.getElementById('btn-backup').addEventListener('click', backupData);
-
-
-  // Start Application
-  initDB().then(() => {
-      updateUI();
-      const navRegisterBtn = document.getElementById("nav-register");
-      if (navRegisterBtn) {
-        navRegisterBtn.click();
-      }
-  });
-});
+    document.getElementById('view-'+v).classList.remove('hidden');
+    document.getElementById('btn-nav-'+v).className = "flex-1 py-2 rounded-xl text-sm font-medium bg-indigo-600";
+    if(v === 'stats') renderStats();
+}
+
+function renderHistory(ex, weights) {
+    const list = document.getElementById('history-list');
+    const items = [
+        ...ex.map(r => ({...r, t: 'exercise', icon: EX_CONFIG[r.ejercicio]?.icon || '💪'})), 
+        ...weights.map(w => ({...w, ejercicio: 'Peso', valor: w.peso, t: 'weight', icon: '⚖️'}))
+    ].sort((a,b) => new Date(b.fecha_iso) - new Date(a.fecha_iso));
+    
+    list.innerHTML = items.map(i => `
+        <div class="glass-panel p-4 rounded-2xl flex justify-between items-center">
+            <div class="text-left">
+                <div class="font-bold text-indigo-300">${i.ejercicio}</div>
+                <div class="text-[10px] text-slate-500 uppercase">${new Date(i.fecha_iso).toLocaleString()}</div>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-xl font-bold font-mono text-white">${i.valor}</span>
+                <div class="flex flex-col gap-1">
+                    <button onclick="openInput('${i.ejercicio}', '', '${i.icon}', '${i.valor}', ${i.id})" class="text-indigo-400 text-[10px] font-bold border border-indigo-400/30 px-2 py-1 rounded">EDITAR</button>
+                    <button onclick="remove(${i.id}, '${i.t}')" class="text-rose-500 text-[10px] font-bold border border-rose-500/30 px-2 py-1 rounded">BORRAR</button>
+                </div>
+            </div>
+        </div>`).join('');
+}
+
+async function remove(id, type) { 
+    if(confirm("¿Eliminar?")) { 
+        await fetch(API, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, type }) }); 
+        load(); 
+    } 
+}
