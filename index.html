@@ -933,9 +933,9 @@
                 document.getElementById('btn-copy-last').classList.add('hidden');
             }
 
-            // Input Value
+            // Input Value (por defecto en 0 al generar nuevo registro)
             const input = document.getElementById('drawer-input');
-            input.value = prefillVal !== null ? prefillVal : (lastRecordValue || '');
+            input.value = prefillVal !== null ? prefillVal : (editId ? (lastRecordValue || 0) : 0);
             input.step = ex.step || 1;
 
             // Quick Preset Chips
@@ -995,6 +995,7 @@
                 card.classList.remove('translate-y-full');
                 card.classList.add('translate-y-0');
                 input.focus();
+                input.select();
             }, 10);
         }
 
