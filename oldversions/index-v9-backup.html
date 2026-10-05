@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack Cloud Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #020617; 
+            overscroll-behavior: none; 
+        }
+        .glass-panel { 
+            background: rgba(30, 41, 59, 0.6); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        /* Ocultar Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        button:active { transform: scale(0.96); }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen pb-20">
+
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b-slate-800 h-16 flex items-center justify-between px-6">
+        <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">FitTrack Pro</h1>
+        <div id="sync-status" class="text-[10px] font-bold text-emerald-500 flex items-center gap-1">
+            <span id="status-dot" class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> 
+            <span id="status-text">ONLINE</span>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 pt-24 space-y-8">
+        <div class="flex p-1 bg-slate-900/80 rounded-2xl glass-panel max-w-sm mx-auto">
+            <button onclick="showView('register')" id="btn-nav-register" class="flex-1 py-2 rounded-xl text-sm font-medium bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20">Registrar</button>
+            <button onclick="showView('stats')" id="btn-nav-stats" class="flex-1 py-2 rounded-xl text-sm font-medium text-slate-400 transition-all">Stats</button>
+            <button onclick="showView('history')" id="btn-nav-history" class="flex-1 py-2 rounded-xl text-sm font-medium text-slate-400 transition-all">Historial</button>
+        </div>
+
+        <div id="view-register" class="space-y-6">
+            <div id="exercise-selection" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <button onclick="openInput('Correr', 'km', '🏃')" class="glass-panel p-5 rounded-2xl text-left font-bold">🏃 Correr</button>
+                <button onclick="openInput('Flexiones', 'reps', '💪')" class="glass-panel p-5 rounded-2xl text-left font-bold">💪 Flexiones</button>
+                <button onclick="openInput('Sentadillas', 'reps', '🍑')" class="glass-panel p-5 rounded-2xl text-left font-bold">🍑 Sentadillas</button>
+                <button onclick="openInput('Plancha', 'min', '🪵')" class="glass-panel p-5 rounded-2xl text-left font-bold">🪵 Plancha</button>
+                <button onclick="openInput('Bench Press', 'reps', '🏋️‍♂️')" class="glass-panel p-5 rounded-2xl text-left font-bold">🏋️‍♂️ Bench</button>
+                <button onclick="openInput('Abdominales', 'reps', '🧘')" class="glass-panel p-5 rounded-2xl text-left font-bold">🧘 Abdo</button>
+                <button onclick="openInput('Peso', 'kg', '⚖️')" class="glass-panel p-5 rounded-2xl border-emerald-500/20 text-left font-bold text-emerald-400">⚖️ Peso</button>
+            </div>
+            
+            <div id="input-panel" class="hidden glass-panel p-8 rounded-3xl border-t-4 border-indigo-500 shadow-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="input-title" class="text-2xl font-bold italic text-indigo-100"></h2>
+                    <button onclick="closeInput()" class="text-slate-500 text-xs font-bold tracking-widest hover:text-white transition-colors">CERRAR</button>
+                </div>
+                <input type="number" id="main-input" inputmode="decimal" class="w-full bg-slate-950/80 border border-slate-700 rounded-2xl p-6 text-4xl text-center mb-6 focus:border-indigo-500 outline-none text-white font-mono placeholder-slate-700" placeholder="0.0">
+                <button id="btn-save-main" onclick="handleSave()" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 py-4 rounded-2xl font-extrabold text-lg transition shadow-xl shadow-indigo-500/20">GUARDAR REGISTRO</button>
+            </div>
+        </div>
+
+        <div id="view-stats" class="hidden space-y-6">
+            
+            <div class="glass-panel p-2 rounded-full flex justify-between items-center max-w-md mx-auto">
+                <button onclick="changeDate(-1)" class="w-10 h-10 flex items-center justify-center text-indigo-400 font-bold rounded-full">←</button>
+                <div class="flex gap-1">
+                    <button onclick="setPeriod('day')" class="period-btn px-3 py-1.5 rounded-full text-[10px] font-bold bg-indigo-600 uppercase tracking-wide">Día</button>
+                    <button onclick="setPeriod('week')" class="period-btn px-3 py-1.5 rounded-full text-[10px] font-bold bg-transparent text-slate-400 uppercase tracking-wide">Sem</button>
+                    <button onclick="setPeriod('month')" class="period-btn px-3 py-1.5 rounded-full text-[10px] font-bold bg-transparent text-slate-400 uppercase tracking-wide">Mes</button>
+                    <button onclick="setPeriod('year')" class="period-btn px-3 py-1.5 rounded-full text-[10px] font-bold bg-transparent text-slate-400 uppercase tracking-wide">Año</button>
+                </div>
+                <button onclick="changeDate(1)" class="w-10 h-10 flex items-center justify-center text-indigo-400 font-bold rounded-full">→</button>
+            </div>
+            
+            <div class="text-center">
+                <span id="current-period-label" class="text-xs font-bold text-slate-400 tracking-widest uppercase"></span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+                <div class="glass-panel p-4 rounded-2xl text-center">
+                    <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Sesiones</div>
+                    <div id="summary-sessions" class="text-xl font-bold text-white">0</div>
+                </div>
+                <div class="glass-panel p-4 rounded-2xl text-center">
+                    <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Volumen</div>
+                    <div id="summary-reps" class="text-xl font-bold text-indigo-400">0</div>
+                    <div class="text-[8px] text-slate-600">reps totales</div>
+                </div>
+                <div class="glass-panel p-4 rounded-2xl text-center">
+                    <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Distancia</div>
+                    <div id="summary-km" class="text-xl font-bold text-cyan-400">0</div>
+                    <div class="text-[8px] text-slate-600">km totales</div>
+                </div>
+            </div>
+
+            <div class="glass-panel p-4 rounded-3xl space-y-3">
+                <div class="flex justify-between items-end">
+                    <h3 class="text-sm font-bold text-slate-300 flex items-center gap-2">
+                        <span class="w-1 h-4 bg-emerald-500 rounded-full"></span> Constancia
+                    </h3>
+                    <div class="text-[8px] text-slate-500 flex gap-1 items-center">
+                        <span class="w-2 h-2 rounded-sm bg-slate-800/50 border border-white/10"></span>
+                        <span class="w-2 h-2 rounded-sm bg-emerald-600 border border-emerald-400"></span>
+                        <span class="w-2 h-2 rounded-sm bg-green-400"></span>
+                    </div>
+                </div>
+                <div id="heatmap-container" class="overflow-x-auto no-scrollbar pb-1 direction-rtl">
+                    <div id="consistency-graph" class="flex gap-1 min-w-max"></div>
+                </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-3xl space-y-4">
+                <h3 class="text-sm font-bold text-slate-300 flex items-center gap-2">
+                    <span class="w-1 h-4 bg-indigo-500 rounded-full"></span> Rendimiento
+                </h3>
+                <div class="h-64"><canvas id="chartEx"></canvas></div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-3xl space-y-4">
+                <h3 class="text-sm font-bold text-slate-300 flex items-center gap-2">
+                    <span class="w-1 h-4 bg-emerald-500 rounded-full"></span> Evolución Peso
+                </h3>
+                <div class="h-56"><canvas id="chartWeight"></canvas></div>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest px-2">Récords Personales (Histórico)</h3>
+                <div id="pr-container" class="grid grid-cols-2 gap-3"></div>
+            </div>
+        </div>
+
+        <div id="view-history" class="hidden space-y-3">
+            <div id="history-list" class="space-y-3 pb-10"></div>
+        </div>
+    </main>
+
+    <script>
+        const API = 'https://seashell-jellyfish-767109.hostingersite.com/api/sync.php';
+        
+        let state = { exercise: '', unit: '', icon: '', id: null };
+        let cloudData = { records: [], weightRecords: [] };
+        let statsPeriod = 'day', referenceDate = new Date();
+
+        const EX_CONFIG = {
+            Correr:       { icon: '🏃', unit: 'km',   color: '#0ea5e9' },
+            Flexiones:    { icon: '💪', unit: 'reps', color: '#f59e0b' },
+            Sentadillas:  { icon: '🍑', unit: 'reps', color: '#ec4899' },
+            Plancha:      { icon: '🪵', unit: 'min',  color: '#8b5cf6' },
+            "Bench Press":{ icon: '🏋️‍♂️', unit: 'reps', color: '#ef4444' },
+            Abdominales:  { icon: '🧘', unit: 'reps', color: '#10b981' },
+            Peso:         { icon: '⚖️', unit: 'kg',   color: '#64748b' }
+        };
+
+        window.onload = () => load();
+
+        async function load() {
+            try {
+                const r = await fetch(API);
+                if (!r.ok) throw new Error("Offline");
+                const d = await r.json();
+                if (d.success) {
+                    cloudData = d;
+                    updateStatus(true);
+                    renderHistory(d.records, d.weightRecords);
+                    if (!document.getElementById('view-stats').classList.contains('hidden')) renderStats();
+                }
+            } catch (e) { updateStatus(false); }
+        }
+
+        function updateStatus(online) {
+            const text = document.getElementById('status-text');
+            const dot = document.getElementById('status-dot');
+            text.innerText = online ? "ONLINE" : "OFFLINE";
+            text.className = online ? "text-emerald-500" : "text-rose-500";
+            dot.className = online ? "w-2 h-2 bg-emerald-500 rounded-full animate-pulse" : "w-2 h-2 bg-rose-500 rounded-full";
+        }
+
+        // --- Stats Logic ---
+        function setPeriod(p) {
+            statsPeriod = p;
+            document.querySelectorAll('.period-btn').forEach(b => {
+                b.className = "period-btn px-3 py-1.5 rounded-full text-[10px] font-bold bg-transparent text-slate-400 uppercase tracking-wide transition-all";
+                const textMap = { 'day': 'día', 'week': 'sem', 'month': 'mes', 'year': 'año' };
+                if (b.innerText.toLowerCase() === textMap[p]) {
+                    b.className = "period-btn px-3 py-1.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white uppercase tracking-wide shadow-lg shadow-indigo-500/30 transition-all";
+                }
+            });
+            renderStats();
+        }
+
+        function changeDate(delta) {
+            if (statsPeriod === 'day') referenceDate.setDate(referenceDate.getDate() + delta);
+            else if (statsPeriod === 'week') referenceDate.setDate(referenceDate.getDate() + (delta * 7));
+            else if (statsPeriod === 'month') referenceDate.setMonth(referenceDate.getMonth() + delta);
+            else if (statsPeriod === 'year') referenceDate.setFullYear(referenceDate.getFullYear() + delta);
+            renderStats();
+        }
+
+        function getPeriodRange() {
+            let start = new Date(referenceDate); start.setHours(0,0,0,0);
+            let end = new Date(referenceDate); end.setHours(23,59,59,999);
+
+            if (statsPeriod === 'week') {
+                start.setDate(start.getDate() - start.getDay());
+                end = new Date(start); end.setDate(start.getDate() + 6); end.setHours(23,59,59,999);
+            } else if (statsPeriod === 'month') {
+                start.setDate(1);
+                end = new Date(start); end.setMonth(start.getMonth() + 1); end.setDate(0); end.setHours(23,59,59,999);
+            } else if (statsPeriod === 'year') {
+                start.setMonth(0, 1);
+                end = new Date(start); end.setMonth(11, 31); end.setHours(23,59,59,999);
+            }
+            return { start, end };
+        }
+
+        function renderStats() {
+            const range = getPeriodRange();
+            document.getElementById('current-period-label').innerText = `${range.start.toLocaleDateString()} - ${range.end.toLocaleDateString()}`;
+
+            const filterFn = r => { const d = new Date(r.fecha_iso); return d >= range.start && d <= range.end; };
+            const filteredEx = cloudData.records.filter(filterFn);
+            const filteredW = cloudData.weightRecords.filter(filterFn).sort((a,b) => new Date(a.fecha_iso) - new Date(b.fecha_iso));
+
+            renderSummary(filteredEx);
+
+            const exLabels = [...new Set(filteredEx.map(r => r.ejercicio))];
+            const exData = exLabels.map(l => filteredEx.filter(r => r.ejercicio === l).reduce((a,b) => a + parseFloat(b.valor), 0));
+            const bgColors = exLabels.map(label => EX_CONFIG[label]?.color || '#6366f1');
+
+            renderChart('chartEx', exLabels, exData, 'bar', bgColors);
+            renderChart('chartWeight', filteredW.map(w => new Date(w.fecha_iso).toLocaleDateString(undefined, {day:'numeric', month:'short'})), filteredW.map(w => w.peso), 'line', '#10b981');
+
+            renderPersonalRecords(cloudData.records);
+            renderHeatmap(cloudData.records); 
+        }
+
+        // --- HEATMAP FUNCIONAL Y ROBUSTO ---
+        function renderHeatmap(records) {
+            const container = document.getElementById('consistency-graph');
+            if (!container) return;
+            container.innerHTML = '';
+
+            // 1. Mapear Intensidad
+            const intensity = {};
+            records.forEach(r => {
+                if(r.fecha_iso) {
+                    const k = r.fecha_iso.substring(0, 10);
+                    intensity[k] = (intensity[k] || 0) + 1;
+                }
+            });
+
+            // 2. Configuración del Calendario
+            const today = new Date();
+            const endDate = new Date(today);
+            const startDate = new Date(today);
+            startDate.setDate(today.getDate() - 365);
+            
+            // Alinear al domingo
+            startDate.setDate(startDate.getDate() - startDate.getDay());
+
+            let currentDate = new Date(startDate);
+
+            const getGridKey = (d) => {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+
+            // 3. Generar Grid
+            while (currentDate <= endDate) {
+                const weekCol = document.createElement('div');
+                weekCol.className = 'flex flex-col gap-1';
+
+                for (let i = 0; i < 7; i++) {
+                    const dateKey = getGridKey(currentDate);
+                    const count = intensity[dateKey] || 0;
+
+                    let colorClass = 'bg-slate-800/50 border border-white/5'; 
+                    if (count > 0) colorClass = 'bg-emerald-600 border border-emerald-400'; 
+                    if (count > 2) colorClass = 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.6)]'; 
+
+                    const square = document.createElement('div');
+                    square.className = `w-3 h-3 rounded-sm ${colorClass}`; // Sin transiciones molestas
+                    square.title = `${dateKey}: ${count}`; 
+
+                    weekCol.appendChild(square);
+                    
+                    currentDate.setDate(currentDate.getDate() + 1);
+                    if (currentDate > endDate && i === 6) break;
+                }
+                container.appendChild(weekCol);
+            }
+            
+            setTimeout(() => {
+                const scrollContainer = document.getElementById('heatmap-container');
+                if(scrollContainer) scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+            }, 100);
+        }
+
+        function renderSummary(records) {
+            const uniqueDays = new Set(records.map(r => r.fecha_iso.split('T')[0])).size;
+            document.getElementById('summary-sessions').innerText = uniqueDays;
+
+            const totalReps = records.filter(r => EX_CONFIG[r.ejercicio]?.unit === 'reps')
+                                     .reduce((acc, curr) => acc + parseFloat(curr.valor), 0);
+            document.getElementById('summary-reps').innerText = totalReps.toLocaleString();
+
+            const totalKm = records.filter(r => EX_CONFIG[r.ejercicio]?.unit === 'km')
+                                   .reduce((acc, curr) => acc + parseFloat(curr.valor), 0);
+            document.getElementById('summary-km').innerText = totalKm.toFixed(1);
+        }
+
+        function renderPersonalRecords(allRecords) {
+            const container = document.getElementById('pr-container');
+            container.innerHTML = '';
+            
+            const exercisesInHistory = [...new Set(allRecords.map(r => r.ejercicio))];
+
+            exercisesInHistory.forEach(exName => {
+                const conf = EX_CONFIG[exName];
+                if (!conf) return;
+
+                const recordsOfEx = allRecords.filter(r => r.ejercicio === exName);
+                const maxVal = recordsOfEx.reduce((max, r) => Math.max(max, parseFloat(r.valor)), 0);
+
+                const div = document.createElement('div');
+                div.className = "glass-panel p-3 rounded-2xl flex items-center justify-between";
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="text-2xl">${conf.icon}</div>
+                        <div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">${exName}</div>
+                            <div class="text-lg font-bold text-white leading-none mt-0.5">${maxVal} <span class="text-[10px] text-slate-500">${conf.unit}</span></div>
+                        </div>
+                    </div>
+                    <div class="text-[8px] font-bold px-2 py-1 rounded bg-slate-800 text-slate-300">PB</div>
+                `;
+                container.appendChild(div);
+            });
+            
+            if(exercisesInHistory.length === 0) {
+                container.innerHTML = '<div class="col-span-2 text-center text-xs text-slate-500 py-4">Sin registros aún</div>';
+            }
+        }
+
+        function renderChart(id, labels, data, type, colors) {
+            const ctx = document.getElementById(id).getContext('2d');
+            if (window[id+'Chart']) window[id+'Chart'].destroy();
+            
+            window[id+'Chart'] = new Chart(ctx, {
+                type, 
+                data: { 
+                    labels, 
+                    datasets: [{ 
+                        data, 
+                        backgroundColor: colors, 
+                        borderColor: Array.isArray(colors) ? colors : colors, 
+                        borderWidth: 1,
+                        tension: 0.3,
+                        pointRadius: type === 'line' ? 4 : 0,
+                        pointBackgroundColor: '#020617'
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false }, tooltip: {
+                        backgroundColor: 'rgba(2, 6, 23, 0.9)',
+                        titleColor: '#fff',
+                        bodyColor: '#cbd5e1',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: false
+                    }},
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#64748b', font: {size: 10} } },
+                        x: { grid: { display: false }, ticks: { color: '#64748b', font: {size: 10} } }
+                    }
+                }
+            });
+        }
+
+        // --- Core ---
+        async function handleSave() {
+            const val = document.getElementById('main-input').value;
+            if(!val) return;
+            
+            const btn = document.getElementById('btn-save-main');
+            const originalText = btn.innerText;
+            btn.innerText = "GUARDANDO...";
+            btn.disabled = true;
+
+            const method = state.id ? 'PUT' : 'POST';
+            const payload = state.exercise === 'Peso' 
+                ? (state.id ? { id: state.id, value: val, type: 'weight' } : { weightRecords: [{ date: new Date().toISOString(), weight: val }] })
+                : (state.id ? { id: state.id, value: val, type: 'exercise' } : { records: [{ date: new Date().toISOString(), exercise: state.exercise, type: state.unit, value: val }] });
+
+            try {
+                const response = await fetch(API, { 
+                    method, 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(payload) 
+                });
+                if (response.ok) { 
+                    closeInput(); 
+                    load(); 
+                }
+            } catch (err) { alert("Error de conexión"); }
+            
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+
+        function openInput(name, unit, icon, val = '', id = null) {
+            state = { exercise: name, unit, icon, id };
+            showView('register');
+            document.getElementById('input-title').innerText = id ? `Editar: ${name}` : `${name}`;
+            document.getElementById('main-input').value = val;
+            document.getElementById('input-panel').classList.remove('hidden');
+            document.getElementById('exercise-selection').classList.add('hidden');
+            document.getElementById('main-input').focus();
+        }
+
+        function closeInput() { 
+            document.getElementById('input-panel').classList.add('hidden'); 
+            document.getElementById('exercise-selection').classList.remove('hidden'); 
+        }
+
+        function showView(v) {
+            ['register', 'stats', 'history'].forEach(x => {
+                document.getElementById('view-'+x).classList.add('hidden');
+                document.getElementById('btn-nav-'+x).className = "flex-1 py-2 rounded-xl text-sm font-medium text-slate-400 transition-all";
+            });
+            document.getElementById('view-'+v).classList.remove('hidden');
+            document.getElementById('btn-nav-'+v).className = "flex-1 py-2 rounded-xl text-sm font-medium bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20";
+            if(v === 'stats') renderStats();
+        }
+
+        function renderHistory(ex, weights) {
+            const list = document.getElementById('history-list');
+            const items = [
+                ...ex.map(r => ({...r, t: 'exercise', icon: EX_CONFIG[r.ejercicio]?.icon || '💪'})), 
+                ...weights.map(w => ({...w, ejercicio: 'Peso', valor: w.peso, t: 'weight', icon: '⚖️'}))
+            ].sort((a,b) => new Date(b.fecha_iso) - new Date(a.fecha_iso));
+            
+            list.innerHTML = items.map(i => `
+                <div class="glass-panel p-4 rounded-2xl flex justify-between items-center transition-all">
+                    <div class="text-left flex items-center gap-3">
+                        <div class="bg-slate-800/50 p-2 rounded-xl text-lg">${i.icon}</div>
+                        <div>
+                            <div class="font-bold text-slate-200 text-sm">${i.ejercicio}</div>
+                            <div class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">${new Date(i.fecha_iso).toLocaleDateString()} ${new Date(i.fecha_iso).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg font-bold font-mono text-white tracking-tight">${i.valor}</span>
+                        <div class="flex flex-col gap-1">
+                            <button onclick="openInput('${i.ejercicio}', '', '${i.icon}', '${i.valor}', ${i.id})" class="text-indigo-400 text-[10px] font-bold border border-indigo-500/30 px-2 py-1 rounded hover:bg-indigo-500/10">EDIT</button>
+                            <button onclick="remove(${i.id}, '${i.t}')" class="text-rose-500 text-[10px] font-bold border border-rose-500/30 px-2 py-1 rounded hover:bg-rose-500/10">DEL</button>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        async function remove(id, type) { 
+            if(confirm("¿Estás seguro de eliminar este registro?")) { 
+                await fetch(API, { 
+                    method: 'DELETE', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ id, type }) 
+                }); 
+                load(); 
+            } 
+        }
+    </script>
+</body>
+</html>
