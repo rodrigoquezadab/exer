@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>FitTrack Pro - Registro y Rendimiento Fitness</title>
-    <meta name="description" content="Aplicación profesional para registrar entrenamientos, monitorear peso y visualizar estadísticas de progreso físico.">
+    <meta name="description"
+        content="Aplicación profesional para registrar entrenamientos, monitorear peso y visualizar estadísticas de progreso físico.">
     <meta name="theme-color" content="#030712">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="FitTrack Pro">
-    
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -29,38 +32,39 @@
             }
         }
     </script>
-    
+
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <!-- Google Fonts Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
     <style>
         * {
             -webkit-tap-highlight-color: transparent;
             box-sizing: border-box;
         }
-        
-        body { 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-            background-color: #030712; 
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #030712;
             color: #f1f5f9;
             overscroll-behavior-y: contain;
             touch-action: manipulation;
         }
 
         /* Glassmorphism premium */
-        .glass-panel { 
-            background: rgba(15, 23, 42, 0.72); 
-            backdrop-filter: blur(16px); 
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.07); 
+            border: 1px solid rgba(255, 255, 255, 0.07);
             box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
         }
-        
+
         .glass-card {
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.6) 100%);
             backdrop-filter: blur(12px);
@@ -75,31 +79,42 @@
         }
 
         /* Ocultar Scrollbar */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
         /* Safe Area Padding for Mobile Bottom Bar */
         .safe-bottom {
             padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
         }
+
         .safe-bottom-nav {
             padding-bottom: env(safe-area-inset-bottom, 0px);
         }
-        
+
         /* Animaciones para Bottom Sheet */
         .drawer-overlay {
             transition: opacity 0.25s ease-out;
         }
+
         .drawer-content {
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        
+
         /* Botones con micro-interacción */
-        button, .clickable-pill {
+        button,
+        .clickable-pill {
             user-select: none;
             transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
         }
-        button:active, .clickable-pill:active {
+
+        button:active,
+        .clickable-pill:active {
             transform: scale(0.95);
         }
 
@@ -107,15 +122,22 @@
         .glow-indigo {
             box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.35);
         }
+
         .glow-emerald {
             box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.35);
         }
 
         /* Animación de spin para refrescar */
         @keyframes spinSlow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
+
         .animate-spin-custom {
             animation: spinSlow 0.8s linear infinite;
         }
@@ -125,20 +147,38 @@
             pointer-events: none;
             z-index: 9999;
         }
+
         .toast-msg {
             pointer-events: auto;
             animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+
         @keyframes slideDown {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
+
         @keyframes fadeOut {
-            from { transform: translateY(0); opacity: 1; }
-            to { transform: translateY(-30%); opacity: 0; }
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateY(-30%);
+                opacity: 0;
+            }
         }
     </style>
 </head>
+
 <body class="text-slate-100 min-h-screen safe-bottom selection:bg-indigo-500 selection:text-white">
 
     <!-- TOAST NOTIFICATIONS CONTAINER -->
@@ -149,24 +189,32 @@
         <div class="max-w-2xl mx-auto h-full flex items-center justify-between">
             <!-- App Brand & Icon -->
             <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white font-black text-lg">
+                <div
+                    class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white font-black text-lg">
                     ⚡
                 </div>
                 <div>
-                    <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent flex items-center gap-1.5 leading-none">
-                        FitTrack <span class="text-indigo-400 text-xs px-1.5 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/20">PRO</span>
+                    <h1
+                        class="text-base font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent flex items-center gap-1.5 leading-none">
+                        FitTrack <span
+                            class="text-indigo-400 text-xs px-1.5 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/20">PRO</span>
                     </h1>
-                    <span id="header-today-text" class="text-[11px] font-medium text-slate-400 leading-tight">Cargando fecha...</span>
+                    <span id="header-today-text" class="text-[11px] font-medium text-slate-400 leading-tight">Cargando
+                        fecha...</span>
                 </div>
             </div>
 
             <!-- Sync Status & Manual Sync Button -->
             <div class="flex items-center gap-2">
-                <button id="btn-sync" onclick="manualSync()" title="Sincronizar datos" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-800/80 border border-white/5 hover:border-indigo-500/30 text-xs text-slate-300 transition-all active:scale-95">
+                <button id="btn-sync" onclick="manualSync()" title="Sincronizar datos"
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-800/80 border border-white/5 hover:border-indigo-500/30 text-xs text-slate-300 transition-all active:scale-95">
                     <span id="status-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span id="status-text" class="text-[11px] font-bold text-slate-300">ONLINE</span>
-                    <svg id="sync-icon" class="w-3.5 h-3.5 text-slate-400 ml-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    <svg id="sync-icon" class="w-3.5 h-3.5 text-slate-400 ml-0.5" fill="none" stroke="currentColor"
+                        stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                        </path>
                     </svg>
                 </button>
             </div>
@@ -182,19 +230,24 @@
         <div id="view-register" class="space-y-5 animate-fade">
             <!-- Daily Quick Hero Card -->
             <div class="glass-panel p-4 sm:p-5 rounded-3xl relative overflow-hidden border-indigo-500/20">
-                <div class="absolute -right-8 -top-8 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                <div
+                    class="absolute -right-8 -top-8 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none">
+                </div>
                 <div class="flex items-center justify-between">
                     <div>
-                        <span class="text-[11px] font-bold tracking-wider text-indigo-400 uppercase">Resumen Diario</span>
-                        <h2 class="text-xl sm:text-2xl font-black text-white mt-0.5" id="hero-greeting">¡Listo para entrenar!</h2>
+                        <span class="text-[11px] font-bold tracking-wider text-indigo-400 uppercase">Resumen
+                            Diario</span>
+                        <h2 class="text-xl sm:text-2xl font-black text-white mt-0.5" id="hero-greeting">¡Listo para
+                            entrenar!</h2>
                     </div>
                     <div class="text-right">
                         <div class="text-2xl font-extrabold text-indigo-400" id="hero-today-count">0</div>
                         <span class="text-[10px] text-slate-400 uppercase font-semibold">Registros hoy</span>
                     </div>
                 </div>
-                
-                <div class="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-400">
+
+                <div
+                    class="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-400">
                     <span class="flex items-center gap-1.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
                         <span id="hero-recent-activity">Sin registros recientes</span>
@@ -207,19 +260,29 @@
 
             <!-- Category Pills Filter -->
             <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-                <button onclick="filterExercises('todos')" class="ex-filter-btn px-3.5 py-1.5 rounded-full text-xs font-bold bg-indigo-600 text-white shadow-md shadow-indigo-600/30 whitespace-nowrap" data-filter="todos">
+                <button onclick="filterExercises('todos')"
+                    class="ex-filter-btn px-3.5 py-1.5 rounded-full text-xs font-bold bg-indigo-600 text-white shadow-md shadow-indigo-600/30 whitespace-nowrap"
+                    data-filter="todos">
                     Todos
                 </button>
-                <button onclick="filterExercises('fuerza')" class="ex-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900/80 text-slate-400 border border-white/5 whitespace-nowrap hover:text-white" data-filter="fuerza">
+                <button onclick="filterExercises('fuerza')"
+                    class="ex-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900/80 text-slate-400 border border-white/5 whitespace-nowrap hover:text-white"
+                    data-filter="fuerza">
                     💪 Fuerza
                 </button>
-                <button onclick="filterExercises('cardio')" class="ex-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900/80 text-slate-400 border border-white/5 whitespace-nowrap hover:text-white" data-filter="cardio">
+                <button onclick="filterExercises('cardio')"
+                    class="ex-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900/80 text-slate-400 border border-white/5 whitespace-nowrap hover:text-white"
+                    data-filter="cardio">
                     🏃 Cardio
                 </button>
-                <button onclick="filterExercises('core')" class="ex-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900/80 text-slate-400 border border-white/5 whitespace-nowrap hover:text-white" data-filter="core">
+                <button onclick="filterExercises('core')"
+                    class="ex-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900/80 text-slate-400 border border-white/5 whitespace-nowrap hover:text-white"
+                    data-filter="core">
                     🧘 Core
                 </button>
-                <button onclick="filterExercises('corporal')" class="ex-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900/80 text-slate-400 border border-white/5 whitespace-nowrap hover:text-white" data-filter="corporal">
+                <button onclick="filterExercises('corporal')"
+                    class="ex-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900/80 text-slate-400 border border-white/5 whitespace-nowrap hover:text-white"
+                    data-filter="corporal">
                     ⚖️ Peso
                 </button>
             </div>
@@ -234,22 +297,38 @@
         <!-- VIEW 2: ESTADÍSTICAS & PROGRESO (STATS)        -->
         <!-- ============================================== -->
         <div id="view-stats" class="hidden space-y-6 animate-fade">
-            
+
             <!-- Period Selector & Date Navigation -->
             <div class="glass-panel p-2 rounded-2xl flex items-center justify-between gap-1 shadow-lg">
-                <button onclick="changeDate(-1)" class="w-9 h-9 flex items-center justify-center text-slate-300 hover:text-white bg-slate-800/60 rounded-xl active:scale-90 transition-all" title="Período anterior">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+                <button onclick="changeDate(-1)"
+                    class="w-9 h-9 flex items-center justify-center text-slate-300 hover:text-white bg-slate-800/60 rounded-xl active:scale-90 transition-all"
+                    title="Período anterior">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+                    </svg>
                 </button>
-                
+
                 <div class="flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl">
-                    <button onclick="setPeriod('day')" class="period-btn px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition-all bg-indigo-600 text-white shadow" data-period="day">Día</button>
-                    <button onclick="setPeriod('week')" class="period-btn px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition-all text-slate-400" data-period="week">Sem</button>
-                    <button onclick="setPeriod('month')" class="period-btn px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition-all text-slate-400" data-period="month">Mes</button>
-                    <button onclick="setPeriod('year')" class="period-btn px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition-all text-slate-400" data-period="year">Año</button>
+                    <button onclick="setPeriod('day')"
+                        class="period-btn px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition-all bg-indigo-600 text-white shadow"
+                        data-period="day">Día</button>
+                    <button onclick="setPeriod('week')"
+                        class="period-btn px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition-all text-slate-400"
+                        data-period="week">Sem</button>
+                    <button onclick="setPeriod('month')"
+                        class="period-btn px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition-all text-slate-400"
+                        data-period="month">Mes</button>
+                    <button onclick="setPeriod('year')"
+                        class="period-btn px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition-all text-slate-400"
+                        data-period="year">Año</button>
                 </div>
 
-                <button onclick="changeDate(1)" class="w-9 h-9 flex items-center justify-center text-slate-300 hover:text-white bg-slate-800/60 rounded-xl active:scale-90 transition-all" title="Período siguiente">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+                <button onclick="changeDate(1)"
+                    class="w-9 h-9 flex items-center justify-center text-slate-300 hover:text-white bg-slate-800/60 rounded-xl active:scale-90 transition-all"
+                    title="Período siguiente">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+                    </svg>
                 </button>
             </div>
 
@@ -257,9 +336,11 @@
             <div class="flex items-center justify-between px-1">
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
-                    <span id="current-period-label" class="text-xs font-bold text-slate-300 uppercase tracking-wider">Cargando rango...</span>
+                    <span id="current-period-label"
+                        class="text-xs font-bold text-slate-300 uppercase tracking-wider">Cargando rango...</span>
                 </div>
-                <button onclick="jumpToToday()" class="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded-lg transition-all active:scale-95">
+                <button onclick="jumpToToday()"
+                    class="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded-lg transition-all active:scale-95">
                     Hoy
                 </button>
             </div>
@@ -290,9 +371,11 @@
                         <h3 class="text-sm font-bold text-white flex items-center gap-2">
                             <span class="w-1.5 h-4 bg-emerald-500 rounded-full"></span> Constancia Anual
                         </h3>
-                        <p class="text-[11px] text-slate-400 mt-0.5" id="heatmap-summary-text">Histórico de días entrenados</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5" id="heatmap-summary-text">Histórico de días
+                            entrenados</p>
                     </div>
-                    <div class="flex items-center gap-1.5 text-[10px] text-slate-400 bg-slate-900/60 px-2.5 py-1 rounded-lg border border-white/5">
+                    <div
+                        class="flex items-center gap-1.5 text-[10px] text-slate-400 bg-slate-900/60 px-2.5 py-1 rounded-lg border border-white/5">
                         <span class="w-2.5 h-2.5 rounded-sm bg-slate-800/80 border border-white/5"></span>
                         <span>0</span>
                         <span class="w-2.5 h-2.5 rounded-sm bg-emerald-600"></span>
@@ -314,7 +397,8 @@
                         <span class="w-1.5 h-4 bg-indigo-500 rounded-full"></span> Rendimiento por Ejercicio
                     </h3>
                     <!-- Dropdown selector de ejercicio para el chart -->
-                    <select id="chart-filter-select" onchange="renderStatsCharts()" class="bg-slate-800/90 border border-white/10 text-xs rounded-xl px-2.5 py-1.5 text-slate-300 outline-none focus:border-indigo-500">
+                    <select id="chart-filter-select" onchange="renderStatsCharts()"
+                        class="bg-slate-800/90 border border-white/10 text-xs rounded-xl px-2.5 py-1.5 text-slate-300 outline-none focus:border-indigo-500">
                         <option value="ALL">Todos los ejercicios</option>
                     </select>
                 </div>
@@ -332,7 +416,9 @@
                         </h3>
                         <p class="text-[11px] text-slate-400 mt-0.5" id="weight-trend-label">Registros cronológicos</p>
                     </div>
-                    <span id="current-weight-badge" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">-- kg</span>
+                    <span id="current-weight-badge"
+                        class="text-xs font-bold px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">--
+                        kg</span>
                 </div>
                 <div class="h-56 relative">
                     <canvas id="chartWeight"></canvas>
@@ -361,15 +447,28 @@
             <!-- Search & Filter Controls -->
             <div class="glass-panel p-3 rounded-2xl space-y-2.5">
                 <div class="relative">
-                    <input type="text" id="history-search" oninput="renderHistoryList()" placeholder="Buscar por ejercicio o fecha..." class="w-full bg-slate-900/90 border border-white/10 rounded-xl px-9 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-indigo-500 transition-all">
-                    <svg class="w-4 h-4 text-slate-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-3 top-2 text-xs text-slate-400 hover:text-white">✕</button>
+                    <input type="text" id="history-search" oninput="renderHistoryList()"
+                        placeholder="Buscar por ejercicio o fecha..."
+                        class="w-full bg-slate-900/90 border border-white/10 rounded-xl px-9 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-indigo-500 transition-all">
+                    <svg class="w-4 h-4 text-slate-500 absolute left-3 top-2.5" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <button id="clear-search-btn" onclick="clearSearch()"
+                        class="hidden absolute right-3 top-2 text-xs text-slate-400 hover:text-white">✕</button>
                 </div>
 
                 <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                    <button onclick="filterHistoryType('all')" class="hist-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-indigo-600 text-white" data-type="all">Todos</button>
-                    <button onclick="filterHistoryType('exercise')" class="hist-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-medium bg-slate-800/80 text-slate-400" data-type="exercise">🏋️ Entrenamientos</button>
-                    <button onclick="filterHistoryType('weight')" class="hist-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-medium bg-slate-800/80 text-slate-400" data-type="weight">⚖️ Peso Corporal</button>
+                    <button onclick="filterHistoryType('all')"
+                        class="hist-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-indigo-600 text-white"
+                        data-type="all">Todos</button>
+                    <button onclick="filterHistoryType('exercise')"
+                        class="hist-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-medium bg-slate-800/80 text-slate-400"
+                        data-type="exercise">🏋️ Entrenamientos</button>
+                    <button onclick="filterHistoryType('weight')"
+                        class="hist-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-medium bg-slate-800/80 text-slate-400"
+                        data-type="weight">⚖️ Peso Corporal</button>
                 </div>
             </div>
 
@@ -384,11 +483,14 @@
     <!-- ============================================== -->
     <!-- NATIVE BOTTOM NAVIGATION BAR (MOBILE FIRST)   -->
     <!-- ============================================== -->
-    <nav class="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/85 backdrop-blur-2xl border-t border-white/[0.08] safe-bottom-nav">
+    <nav
+        class="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/85 backdrop-blur-2xl border-t border-white/[0.08] safe-bottom-nav">
         <div class="max-w-md mx-auto grid grid-cols-3 h-16 px-2">
             <!-- Tab Registrar -->
-            <button onclick="showView('register')" id="nav-btn-register" class="flex flex-col items-center justify-center gap-1 text-indigo-400 relative py-1 transition-all">
-                <div class="w-10 h-7 rounded-xl flex items-center justify-center bg-indigo-500/15 text-indigo-400 transition-all" id="nav-indicator-register">
+            <button onclick="showView('register')" id="nav-btn-register"
+                class="flex flex-col items-center justify-center gap-1 text-indigo-400 relative py-1 transition-all">
+                <div class="w-10 h-7 rounded-xl flex items-center justify-center bg-indigo-500/15 text-indigo-400 transition-all"
+                    id="nav-indicator-register">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
                     </svg>
@@ -397,20 +499,27 @@
             </button>
 
             <!-- Tab Estadísticas -->
-            <button onclick="showView('stats')" id="nav-btn-stats" class="flex flex-col items-center justify-center gap-1 text-slate-400 relative py-1 transition-all">
-                <div class="w-10 h-7 rounded-xl flex items-center justify-center transition-all" id="nav-indicator-stats">
+            <button onclick="showView('stats')" id="nav-btn-stats"
+                class="flex flex-col items-center justify-center gap-1 text-slate-400 relative py-1 transition-all">
+                <div class="w-10 h-7 rounded-xl flex items-center justify-center transition-all"
+                    id="nav-indicator-stats">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                        </path>
                     </svg>
                 </div>
                 <span class="text-[11px] font-semibold tracking-tight">Progreso</span>
             </button>
 
             <!-- Tab Historial -->
-            <button onclick="showView('history')" id="nav-btn-history" class="flex flex-col items-center justify-center gap-1 text-slate-400 relative py-1 transition-all">
-                <div class="w-10 h-7 rounded-xl flex items-center justify-center transition-all" id="nav-indicator-history">
+            <button onclick="showView('history')" id="nav-btn-history"
+                class="flex flex-col items-center justify-center gap-1 text-slate-400 relative py-1 transition-all">
+                <div class="w-10 h-7 rounded-xl flex items-center justify-center transition-all"
+                    id="nav-indicator-history">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
                 <span class="text-[11px] font-semibold tracking-tight">Historial</span>
@@ -423,41 +532,49 @@
     <!-- ============================================== -->
     <div id="drawer-container" class="hidden fixed inset-0 z-50">
         <!-- Backdrop -->
-        <div id="drawer-backdrop" onclick="closeDrawer()" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        <div id="drawer-backdrop" onclick="closeDrawer()"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
 
         <!-- Sheet Modal Content -->
-        <div class="absolute inset-x-0 bottom-0 max-w-lg mx-auto flex flex-col justify-end pointer-events-none p-0 sm:p-4">
-            <div id="drawer-card" class="pointer-events-auto bg-slate-900 border-t sm:border border-white/10 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 transform translate-y-full transition-transform duration-300 ease-out">
-                
+        <div
+            class="absolute inset-x-0 bottom-0 max-w-lg mx-auto flex flex-col justify-end pointer-events-none p-0 sm:p-4">
+            <div id="drawer-card"
+                class="pointer-events-auto bg-slate-900 border-t sm:border border-white/10 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 transform translate-y-full transition-transform duration-300 ease-out">
+
                 <!-- Pull Bar Indicator for Mobile -->
                 <div class="w-12 h-1.5 bg-slate-700/80 rounded-full mx-auto -mt-2 mb-2 sm:hidden"></div>
 
                 <!-- Drawer Header -->
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div id="drawer-icon-box" class="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl shadow-inner bg-slate-800 border border-white/10">
+                        <div id="drawer-icon-box"
+                            class="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl shadow-inner bg-slate-800 border border-white/10">
                             🏃
                         </div>
                         <div>
                             <div class="flex items-center gap-2">
                                 <h3 id="drawer-title" class="text-lg font-black text-white">Correr</h3>
-                                <span id="drawer-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Cardio</span>
+                                <span id="drawer-badge"
+                                    class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Cardio</span>
                             </div>
                             <span id="drawer-subtitle" class="text-xs text-slate-400">Ingresa la distancia en km</span>
                         </div>
                     </div>
-                    <button onclick="closeDrawer()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold active:scale-90 transition-all">
+                    <button onclick="closeDrawer()"
+                        class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold active:scale-90 transition-all">
                         ✕
                     </button>
                 </div>
 
                 <!-- Last Record & PR Reference Badge -->
-                <div id="drawer-last-info" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-800/40 border border-white/5 text-xs">
+                <div id="drawer-last-info"
+                    class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-800/40 border border-white/5 text-xs">
                     <div class="flex items-center gap-1.5 text-slate-300">
                         <span class="text-slate-500">Último:</span>
                         <strong id="drawer-last-value" class="text-white font-mono font-bold">--</strong>
                     </div>
-                    <button id="btn-copy-last" onclick="copyLastValue()" class="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded-lg active:scale-95 transition-all">
+                    <button id="btn-copy-last" onclick="copyLastValue()"
+                        class="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded-lg active:scale-95 transition-all">
                         Repetir último
                     </button>
                 </div>
@@ -466,52 +583,70 @@
                 <div class="space-y-3">
                     <div class="flex items-center justify-between gap-2">
                         <!-- Decrement buttons -->
-                        <button onclick="adjustValue(-5)" class="w-12 h-14 rounded-2xl bg-slate-800/90 text-slate-300 font-extrabold text-sm border border-white/5 active:scale-90 transition-all flex items-center justify-center shadow-sm">
+                        <button onclick="adjustValue(-5)"
+                            class="w-12 h-14 rounded-2xl bg-slate-800/90 text-slate-300 font-extrabold text-sm border border-white/5 active:scale-90 transition-all flex items-center justify-center shadow-sm">
                             -5
                         </button>
-                        <button onclick="adjustValue(-1)" class="w-12 h-14 rounded-2xl bg-slate-800/90 text-slate-300 font-extrabold text-base border border-white/5 active:scale-90 transition-all flex items-center justify-center shadow-sm">
+                        <button onclick="adjustValue(-1)"
+                            class="w-12 h-14 rounded-2xl bg-slate-800/90 text-slate-300 font-extrabold text-base border border-white/5 active:scale-90 transition-all flex items-center justify-center shadow-sm">
                             -1
                         </button>
 
                         <!-- Main Input Container -->
                         <div class="flex-1 relative flex items-center justify-center">
-                            <input type="number" id="drawer-input" inputmode="decimal" step="any" placeholder="0" class="w-full bg-slate-950/90 border-2 border-indigo-500/40 rounded-2xl py-3 px-3 text-center text-3xl font-black font-mono text-white placeholder-slate-700 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/20 transition-all">
-                            <span id="drawer-input-unit" class="absolute right-3.5 text-xs font-bold text-indigo-400 uppercase pointer-events-none">reps</span>
+                            <input type="number" id="drawer-input" inputmode="decimal" step="any" placeholder="0"
+                                class="w-full bg-slate-950/90 border-2 border-indigo-500/40 rounded-2xl py-3 px-3 text-center text-3xl font-black font-mono text-white placeholder-slate-700 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/20 transition-all">
+                            <span id="drawer-input-unit"
+                                class="absolute right-3.5 text-xs font-bold text-indigo-400 uppercase pointer-events-none">reps</span>
                         </div>
 
                         <!-- Increment buttons -->
-                        <button onclick="adjustValue(1)" class="w-12 h-14 rounded-2xl bg-slate-800/90 text-indigo-400 font-extrabold text-base border border-white/5 active:scale-90 transition-all flex items-center justify-center shadow-sm">
+                        <button onclick="adjustValue(1)"
+                            class="w-12 h-14 rounded-2xl bg-slate-800/90 text-indigo-400 font-extrabold text-base border border-white/5 active:scale-90 transition-all flex items-center justify-center shadow-sm">
                             +1
                         </button>
-                        <button onclick="adjustValue(5)" class="w-12 h-14 rounded-2xl bg-slate-800/90 text-indigo-400 font-extrabold text-sm border border-white/5 active:scale-90 transition-all flex items-center justify-center shadow-sm">
+                        <button onclick="adjustValue(5)"
+                            class="w-12 h-14 rounded-2xl bg-slate-800/90 text-indigo-400 font-extrabold text-sm border border-white/5 active:scale-90 transition-all flex items-center justify-center shadow-sm">
                             +5
                         </button>
                     </div>
 
                     <!-- Quick Preset Chips -->
-                    <div id="drawer-presets" class="flex items-center justify-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                    <div id="drawer-presets"
+                        class="flex items-center justify-center gap-1.5 overflow-x-auto no-scrollbar py-1">
                         <!-- Botones rápidos dinámicos (ej: 10, 15, 20, 25, 30) -->
                     </div>
                 </div>
 
                 <!-- Fecha y Hora (Opcional - Expandible) -->
                 <div class="pt-1">
-                    <button onclick="toggleDateOptions()" class="w-full flex items-center justify-between text-xs text-slate-400 hover:text-slate-200 py-1.5 px-1">
+                    <button onclick="toggleDateOptions()"
+                        class="w-full flex items-center justify-between text-xs text-slate-400 hover:text-slate-200 py-1.5 px-1">
                         <span class="flex items-center gap-1.5 font-medium">
-                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
                             <span id="drawer-date-display">Fecha: Ahora (Hoy)</span>
                         </span>
-                        <span id="drawer-date-toggle-text" class="text-[10px] text-indigo-400 font-bold uppercase">Cambiar</span>
+                        <span id="drawer-date-toggle-text"
+                            class="text-[10px] text-indigo-400 font-bold uppercase">Cambiar</span>
                     </button>
-                    <div id="drawer-date-selector" class="hidden mt-2 p-3 bg-slate-950/70 border border-white/5 rounded-2xl space-y-2">
+                    <div id="drawer-date-selector"
+                        class="hidden mt-2 p-3 bg-slate-950/70 border border-white/5 rounded-2xl space-y-2">
                         <label class="text-[10px] font-bold text-slate-400 uppercase">Selecciona fecha y hora:</label>
-                        <input type="datetime-local" id="custom-record-date" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-indigo-500">
+                        <input type="datetime-local" id="custom-record-date"
+                            class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-indigo-500">
                     </div>
                 </div>
 
                 <!-- Primary Action Button -->
-                <button id="btn-save-record" onclick="handleDrawerSave()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 text-white font-extrabold text-base tracking-wide shadow-xl shadow-indigo-600/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                    <span id="btn-save-spinner" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                <button id="btn-save-record" onclick="handleDrawerSave()"
+                    class="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 text-white font-extrabold text-base tracking-wide shadow-xl shadow-indigo-600/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                    <span id="btn-save-spinner"
+                        class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                     <span id="btn-save-label">GUARDAR REGISTRO</span>
                 </button>
             </div>
@@ -523,8 +658,10 @@
     <!-- ============================================== -->
     <div id="confirm-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         <div onclick="closeConfirmModal()" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-        <div class="relative bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl text-center">
-            <div class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-2xl flex items-center justify-center mx-auto">
+        <div
+            class="relative bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl text-center">
+            <div
+                class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-2xl flex items-center justify-center mx-auto">
                 🗑️
             </div>
             <div>
@@ -532,10 +669,12 @@
                 <p id="confirm-modal-text" class="text-xs text-slate-400 mt-1">Esta acción no se puede deshacer.</p>
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="closeConfirmModal()" class="flex-1 py-3 rounded-xl bg-slate-800 text-xs font-bold text-slate-300 hover:text-white active:scale-95 transition-all">
+                <button onclick="closeConfirmModal()"
+                    class="flex-1 py-3 rounded-xl bg-slate-800 text-xs font-bold text-slate-300 hover:text-white active:scale-95 transition-all">
                     Cancelar
                 </button>
-                <button id="btn-confirm-delete" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 text-xs font-bold text-white shadow-lg shadow-rose-600/20 active:scale-95 transition-all">
+                <button id="btn-confirm-delete"
+                    class="flex-1 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 text-xs font-bold text-white shadow-lg shadow-rose-600/20 active:scale-95 transition-all">
                     Eliminar
                 </button>
             </div>
@@ -581,7 +720,7 @@
             loadCachedData();
             renderExerciseCards();
             updateOnlineBadge(navigator.onLine);
-            
+
             // Listeners for network status
             window.addEventListener('online', () => {
                 updateOnlineBadge(true);
@@ -608,7 +747,7 @@
         // Haptic feedback trigger for mobile
         function triggerHaptic() {
             if (navigator.vibrate) {
-                try { navigator.vibrate(12); } catch (e) {}
+                try { navigator.vibrate(12); } catch (e) { }
             }
         }
 
@@ -616,7 +755,7 @@
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            
+
             const colorClasses = {
                 success: 'bg-emerald-950/90 border-emerald-500/30 text-emerald-200',
                 error: 'bg-rose-950/90 border-rose-500/30 text-rose-200',
@@ -633,7 +772,7 @@
 
             toast.className = `toast-msg flex items-center gap-2 px-4 py-2.5 rounded-2xl border text-xs font-semibold shadow-xl backdrop-blur-md transition-all ${colorClasses}`;
             toast.innerHTML = `<span class="font-bold">${icons}</span> <span>${message}</span>`;
-            
+
             container.appendChild(toast);
             setTimeout(() => {
                 toast.style.animation = 'fadeOut 0.3s forwards';
@@ -677,7 +816,7 @@
             try {
                 const response = await fetch(API_URL, { signal: controller.signal });
                 clearTimeout(timeoutId);
-                
+
                 if (!response.ok) throw new Error("Status " + response.status);
                 const data = await response.json();
 
@@ -796,7 +935,7 @@
 
             let currentStreak = 0;
             let checkDate = new Date();
-            
+
             // Check if user worked out today or yesterday
             const todayKey = checkDate.toISOString().substring(0, 10);
             checkDate.setDate(checkDate.getDate() - 1);
@@ -851,13 +990,13 @@
 
                 if (ex.id === 'Peso') {
                     if (cloudData.weightRecords.length > 0) {
-                        const sorted = [...cloudData.weightRecords].sort((a,b) => new Date(b.fecha_iso) - new Date(a.fecha_iso));
+                        const sorted = [...cloudData.weightRecords].sort((a, b) => new Date(b.fecha_iso) - new Date(a.fecha_iso));
                         lastVal = sorted[0].peso;
                     }
                 } else {
                     const exRecords = cloudData.records.filter(r => r.ejercicio === ex.id);
                     if (exRecords.length > 0) {
-                        const sorted = [...exRecords].sort((a,b) => new Date(b.fecha_iso) - new Date(a.fecha_iso));
+                        const sorted = [...exRecords].sort((a, b) => new Date(b.fecha_iso) - new Date(a.fecha_iso));
                         lastVal = sorted[0].valor;
                         maxVal = Math.max(...exRecords.map(r => parseFloat(r.valor) || 0));
                     }
@@ -890,18 +1029,18 @@
         function openDrawer(exerciseId, editId = null, prefillVal = null, customIsoDate = null) {
             triggerHaptic();
             const ex = EX_MAP[exerciseId] || { id: exerciseId, name: exerciseId, unit: '', icon: '⚡', category: 'fuerza', color: '#6366f1', presets: [10, 20, 30], step: 1 };
-            
+
             // Find last record for prefilling suggestion
             let lastRecordValue = null;
             if (ex.id === 'Peso') {
                 if (cloudData.weightRecords.length > 0) {
-                    const sorted = [...cloudData.weightRecords].sort((a,b) => new Date(b.fecha_iso) - new Date(a.fecha_iso));
+                    const sorted = [...cloudData.weightRecords].sort((a, b) => new Date(b.fecha_iso) - new Date(a.fecha_iso));
                     lastRecordValue = sorted[0].peso;
                 }
             } else {
                 const exRecords = cloudData.records.filter(r => r.ejercicio === ex.id);
                 if (exRecords.length > 0) {
-                    const sorted = [...exRecords].sort((a,b) => new Date(b.fecha_iso) - new Date(a.fecha_iso));
+                    const sorted = [...exRecords].sort((a, b) => new Date(b.fecha_iso) - new Date(a.fecha_iso));
                     lastRecordValue = sorted[0].valor;
                 }
             }
@@ -916,7 +1055,7 @@
             document.getElementById('drawer-icon-box').innerHTML = ex.icon;
             document.getElementById('drawer-icon-box').style.background = `${ex.color}20`;
             document.getElementById('drawer-icon-box').style.borderColor = `${ex.color}40`;
-            
+
             document.getElementById('drawer-title').innerText = editId ? `Editar: ${ex.name}` : ex.name;
             document.getElementById('drawer-badge').innerText = ex.category.toUpperCase();
             document.getElementById('drawer-badge').style.color = ex.color;
@@ -941,7 +1080,7 @@
             // Quick Preset Chips
             const presetsContainer = document.getElementById('drawer-presets');
             presetsContainer.innerHTML = '';
-            
+
             if (ex.presets && ex.presets.length > 0) {
                 ex.presets.forEach(p => {
                     const btn = document.createElement('button');
@@ -969,14 +1108,14 @@
             const customDateInput = document.getElementById('custom-record-date');
             if (customIsoDate) {
                 customDateInput.value = customIsoDate.substring(0, 16);
-                document.getElementById('drawer-date-display').innerText = `Fecha: ${new Date(customIsoDate).toLocaleString([], {dateStyle:'short', timeStyle:'short'})}`;
+                document.getElementById('drawer-date-display').innerText = `Fecha: ${new Date(customIsoDate).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}`;
                 document.getElementById('drawer-date-selector').classList.remove('hidden');
             } else {
                 const now = new Date();
                 const offset = now.getTimezoneOffset() * 60000;
                 const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
                 customDateInput.value = localISOTime;
-                document.getElementById('drawer-date-display').innerText = `Fecha: Ahora (Hoy, ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})})`;
+                document.getElementById('drawer-date-display').innerText = `Fecha: Ahora (Hoy, ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`;
                 document.getElementById('drawer-date-selector').classList.add('hidden');
             }
 
@@ -1042,7 +1181,7 @@
             triggerHaptic();
             const input = document.getElementById('drawer-input');
             const val = parseFloat(input.value);
-            
+
             if (isNaN(val) || val <= 0) {
                 showToast('Por favor ingresa un valor válido', 'error');
                 input.focus();
@@ -1067,11 +1206,11 @@
 
             let payload;
             if (isWeight) {
-                payload = editId 
+                payload = editId
                     ? { id: editId, value: val, type: 'weight' }
                     : { weightRecords: [{ date: chosenDate, weight: val }] };
             } else {
-                payload = editId 
+                payload = editId
                     ? { id: editId, value: val, type: 'exercise' }
                     : { records: [{ date: chosenDate, exercise: exercise.id, type: exercise.unit, value: val }] };
             }
@@ -1092,7 +1231,7 @@
                 }
             } catch (err) {
                 console.warn("Fallo guardado online, aplicando optimista local:", err);
-                
+
                 // Fallback optimista local
                 if (editId) {
                     if (isWeight) {
@@ -1151,8 +1290,8 @@
         }
 
         function getPeriodRange() {
-            let start = new Date(referenceDate); start.setHours(0,0,0,0);
-            let end = new Date(referenceDate); end.setHours(23,59,59,999);
+            let start = new Date(referenceDate); start.setHours(0, 0, 0, 0);
+            let end = new Date(referenceDate); end.setHours(23, 59, 59, 999);
 
             if (statsPeriod === 'day') {
                 // Single day
@@ -1162,18 +1301,18 @@
                 start.setDate(diff);
                 end = new Date(start);
                 end.setDate(start.getDate() + 6);
-                end.setHours(23,59,59,999);
+                end.setHours(23, 59, 59, 999);
             } else if (statsPeriod === 'month') {
                 start.setDate(1);
                 end = new Date(start);
                 end.setMonth(start.getMonth() + 1);
                 end.setDate(0);
-                end.setHours(23,59,59,999);
+                end.setHours(23, 59, 59, 999);
             } else if (statsPeriod === 'year') {
                 start.setMonth(0, 1);
                 end = new Date(start);
                 end.setMonth(11, 31);
-                end.setHours(23,59,59,999);
+                end.setHours(23, 59, 59, 999);
             }
             return { start, end };
         }
@@ -1181,7 +1320,7 @@
         function renderStats() {
             const range = getPeriodRange();
             const labelEl = document.getElementById('current-period-label');
-            
+
             const formatDate = d => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: statsPeriod === 'year' ? 'numeric' : undefined });
             if (statsPeriod === 'day') {
                 labelEl.innerText = formatDate(range.start);
@@ -1196,7 +1335,7 @@
             };
 
             const filteredEx = cloudData.records.filter(filterFn);
-            const filteredW = cloudData.weightRecords.filter(filterFn).sort((a,b) => new Date(a.fecha_iso) - new Date(b.fecha_iso));
+            const filteredW = cloudData.weightRecords.filter(filterFn).sort((a, b) => new Date(a.fecha_iso) - new Date(b.fecha_iso));
 
             // Summary metrics
             const uniqueDays = new Set(filteredEx.map(r => r.fecha_iso ? r.fecha_iso.split('T')[0] : null).filter(Boolean)).size;
@@ -1225,12 +1364,12 @@
         function populateChartFilterSelect() {
             const select = document.getElementById('chart-filter-select');
             const currentSelected = select.value || 'ALL';
-            
+
             const uniqueExercises = [...new Set(cloudData.records.map(r => r.ejercicio))];
-            
-            select.innerHTML = '<option value="ALL">Todos los ejercicios</option>' + 
+
+            select.innerHTML = '<option value="ALL">Todos los ejercicios</option>' +
                 uniqueExercises.map(name => `<option value="${name}">${name}</option>`).join('');
-            
+
             if (uniqueExercises.includes(currentSelected)) {
                 select.value = currentSelected;
             }
@@ -1254,14 +1393,14 @@
             if (selectedExercise === 'ALL') {
                 // Agrupado por ejercicio en este período
                 labels = [...new Set(filteredEx.map(r => r.ejercicio))];
-                data = labels.map(l => filteredEx.filter(r => r.ejercicio === l).reduce((a,b) => a + (parseFloat(b.valor) || 0), 0));
+                data = labels.map(l => filteredEx.filter(r => r.ejercicio === l).reduce((a, b) => a + (parseFloat(b.valor) || 0), 0));
                 colors = labels.map(l => EX_MAP[l]?.color || '#6366f1');
             } else {
                 // Cronológico para el ejercicio seleccionado
                 const specificRecords = filteredEx
                     .filter(r => r.ejercicio === selectedExercise)
-                    .sort((a,b) => new Date(a.fecha_iso) - new Date(b.fecha_iso));
-                
+                    .sort((a, b) => new Date(a.fecha_iso) - new Date(b.fecha_iso));
+
                 labels = specificRecords.map(r => new Date(r.fecha_iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }));
                 data = specificRecords.map(r => parseFloat(r.valor) || 0);
                 colors = EX_MAP[selectedExercise]?.color || '#6366f1';
@@ -1322,7 +1461,7 @@
             const ctx = document.getElementById('chartWeight').getContext('2d');
             if (window.weightChartInstance) window.weightChartInstance.destroy();
 
-            const allSortedWeights = [...cloudData.weightRecords].sort((a,b) => new Date(a.fecha_iso) - new Date(b.fecha_iso));
+            const allSortedWeights = [...cloudData.weightRecords].sort((a, b) => new Date(a.fecha_iso) - new Date(b.fecha_iso));
             const weightsToUse = filteredWeights.length > 0 ? filteredWeights : allSortedWeights.slice(-10);
 
             // Latest weight badge
@@ -1402,7 +1541,7 @@
             exercisesInHistory.forEach(exName => {
                 const conf = EX_MAP[exName] || { icon: '⚡', unit: 'reps', color: '#6366f1' };
                 const recordsOfEx = cloudData.records.filter(r => r.ejercicio === exName);
-                
+
                 let maxRecord = recordsOfEx.reduce((prev, curr) => {
                     return (parseFloat(curr.valor) > parseFloat(prev.valor)) ? curr : prev;
                 }, recordsOfEx[0]);
@@ -1420,7 +1559,7 @@
                                 ${maxRecord.valor} <span class="text-[10px] text-slate-400 font-semibold">${conf.unit}</span>
                             </div>
                             <div class="text-[9px] text-slate-500 mt-1 font-medium">
-                                ${new Date(maxRecord.fecha_iso).toLocaleDateString('es-ES', { day:'numeric', month:'short' })}
+                                ${new Date(maxRecord.fecha_iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
                             </div>
                         </div>
                     </div>
@@ -1470,7 +1609,7 @@
                     const month = String(currentDate.getMonth() + 1).padStart(2, '0');
                     const day = String(currentDate.getDate()).padStart(2, '0');
                     const dateKey = `${year}-${month}-${day}`;
-                    
+
                     const count = intensity[dateKey] || 0;
 
                     let colorStyle = 'bg-slate-800/60 border border-white/5';
@@ -1549,7 +1688,7 @@
                     type: 'weight',
                     color: '#14b8a6'
                 }))
-            ].sort((a,b) => new Date(b.fecha_iso) - new Date(a.fecha_iso));
+            ].sort((a, b) => new Date(b.fecha_iso) - new Date(a.fecha_iso));
 
             // Apply Type Filter
             if (historyFilter !== 'all') {
@@ -1607,8 +1746,8 @@
 
                     <div class="space-y-2">
                         ${items.map(i => {
-                            const timeStr = new Date(i.fecha_iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                            return `
+                    const timeStr = new Date(i.fecha_iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    return `
                             <div class="glass-panel p-3.5 rounded-2xl flex items-center justify-between border-white/[0.06] hover:border-white/10 transition-all">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm" style="background: ${i.color}15; border: 1px solid ${i.color}30">
@@ -1641,7 +1780,7 @@
                                 </div>
                             </div>
                             `;
-                        }).join('')}
+                }).join('')}
                     </div>
                 </div>
                 `;
@@ -1702,4 +1841,5 @@
         }
     </script>
 </body>
+
 </html>
